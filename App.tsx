@@ -1,25 +1,35 @@
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import {
-  SafeAreaProvider,
-} from 'react-native-safe-area-context';
+  StatusBar,
+  useColorScheme,
+} from 'react-native';
+
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { PaperProvider } from 'react-native-paper';
+
+import { Routes } from './src/routes/routes';
+
+import { theme } from './src/global/theme';
 
 export const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  const isDarkMode =
+    useColorScheme() === 'dark';
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <View style={styles.container}>
+    <PaperProvider theme={theme}>
+      <SafeAreaProvider>
+        <StatusBar
+          barStyle={
+            isDarkMode
+              ? 'light-content'
+              : 'dark-content'
+          }
+        />
 
-        </View>
-    </SafeAreaProvider>
+        <Routes />
+      </SafeAreaProvider>
+    </PaperProvider>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+};
 
 export default App;

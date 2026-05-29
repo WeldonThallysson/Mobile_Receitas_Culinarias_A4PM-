@@ -5,13 +5,16 @@ export interface IRecipe {
 
   name: string;
 
-  preparation_time_minutes?: number;
+  preparationTimeMinutes?: number;
   servings?: number;
 
-  preparation_method: string;
+  preparationMethod: string;
 
   ingredients?: string;
-
+  category: {
+    id: number;
+    name: string;
+  }
   created_at?: string;
   updated_at?: string;
 }
@@ -35,15 +38,14 @@ export interface IListRecipesResponse {
 }
 
 export interface ICreateRecipeRequest {
-  user_id: number;
   category_id: number;
 
   name: string;
 
-  preparation_time_minutes?: number;
+  preparationTimeMinutes?: number;
   servings?: number;
 
-  preparation_method: string;
+  preparationMethod: string;
 
   ingredients?: string;
 }

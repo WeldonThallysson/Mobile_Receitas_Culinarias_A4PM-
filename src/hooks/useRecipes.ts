@@ -68,6 +68,7 @@ export const useRecipes = () => {
     data: ICreateRecipeRequest,
   ) => {
     try {
+
       setLoading(true);
 
       return await createRecipe(data);

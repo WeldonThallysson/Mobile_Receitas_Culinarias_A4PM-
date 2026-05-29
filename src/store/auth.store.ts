@@ -1,33 +1,35 @@
 import { create } from 'zustand';
-import { IUser } from '../interfaces/api/users.interface';
 
 interface IAuthStore {
+  userId: number | null;
   token: string | null;
-  user: IUser | null;
+  message: string | null;
 
-  setToken: (token: string | null) => void;
-  setUser: (user: IUser | null) => void;
+  setAuth: (data: {
+    userId: number;
+    token: string;
+    message: string;
+  }) => void;
 
   clearAuth: () => void;
 }
 
 export const useAuthStore = create<IAuthStore>((set) => ({
+  userId: null,
   token: null,
-  user: null,
+  message: null,
 
-  setToken: (token) =>
+  setAuth: ({ userId, token, message }) =>
     set({
+      userId,
       token,
-    }),
-
-  setUser: (user) =>
-    set({
-      user,
+      message,
     }),
 
   clearAuth: () =>
     set({
+      userId: null,
       token: null,
-      user: null,
+      message: null,
     }),
 }));

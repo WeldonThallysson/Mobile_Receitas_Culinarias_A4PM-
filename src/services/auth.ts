@@ -41,9 +41,9 @@ export const register = async (
 
 export const recoverPassword = async (
   data: IRecoverPasswordRequest,
-): Promise<void> => {
+): Promise<IApiResponse> => {
   try {
-    await api.post(
+    return await api.post(
       AUTH_ENDPOINTS.RECOVER_PASSWORD,
       data,
     );
