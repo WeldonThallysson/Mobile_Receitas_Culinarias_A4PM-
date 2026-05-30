@@ -141,7 +141,7 @@ const HomeScreen = () => {
                 </Text>
               )}
 
-              {message ? (
+              {!message ? (
                 <Text variant="headlineMedium" style={styles.heroTitle}>
                   {subMessage}
                 </Text>
