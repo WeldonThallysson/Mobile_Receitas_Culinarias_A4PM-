@@ -6,7 +6,7 @@ import Config from 'react-native-config';
 
 import Toast from 'react-native-toast-message';
 
-import { getToken } from '../storage/auth.storage';
+import { getAuth } from '../storage/auth.storage';
 
 export const api = axios.create({
   baseURL:
@@ -16,16 +16,15 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   async config => {
-    const token = await getToken();
+    const authData = await getAuth();
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (authData?.token) {
+      config.headers.Authorization = `Bearer ${authData.token}`;
     }
 
     return config;
   },
 );
-
 
 
 api.interceptors.response.use(

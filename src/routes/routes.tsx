@@ -5,22 +5,28 @@ import { NavigationContainer } from '@react-navigation/native';
 import AppRoutes from './app.routes';
 import AuthRoutes from './stacks/auth.routes';
 
-import { getToken } from '../storage/auth.storage';
+import { getAuth } from '../storage/auth.storage';
 import { useAuthStore } from '../store/auth.store';
 
 export const Routes = () => {
   const token = useAuthStore((state) => state.token);
-  const setToken = useAuthStore((state) => state.setToken);
+  const { setAuth } = useAuthStore();
 
   useEffect(() => {
-    const loadToken = async () => {
-      const tokenStored = await getToken();
+    const loadAuthFromStorage = async () => {
+      const authData = await getAuth();
 
-      setToken(tokenStored);
+      if (authData) {
+        setAuth({
+          userId: authData.userId,
+          token: authData.token,
+          message: authData.message,
+        });
+      }
     };
 
-    loadToken();
-  }, [setToken]);
+    loadAuthFromStorage();
+  }, [setAuth]);
 
   return (
     <NavigationContainer>

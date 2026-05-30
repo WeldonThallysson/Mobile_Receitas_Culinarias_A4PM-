@@ -221,7 +221,6 @@ export const RecipesForm = ({
                             </HelperText>
                           )}
                         </View>
-                        <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '500' }}>min</Text>
                       </View>
                     )}
                   />

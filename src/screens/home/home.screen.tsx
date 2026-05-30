@@ -26,6 +26,7 @@ import { ICreateRecipeRequest } from '../../interfaces/api/recipe.interface';
 import { styles } from './home.screen.styles';
 import { theme } from '../../global/theme';
 
+
 const HomeScreen = () => {
   const { message } = useAuth();
 
@@ -38,6 +39,7 @@ const HomeScreen = () => {
     handleDeleteRecipe,
   } = useRecipes();
 
+  
   const [search, setSearch] = useState('');
 
   const [formVisible, setFormVisible] = useState(false);
@@ -52,6 +54,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     loadRecipes();
+    
   }, []);
 
   const filteredRecipes = useMemo(() => {

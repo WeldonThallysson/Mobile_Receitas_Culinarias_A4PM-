@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -18,7 +18,7 @@ import {
   IResetPasswordRequest,
 } from '../interfaces/api/auth.interface';
 
-import { saveToken, removeToken } from '../storage/auth.storage';
+import { saveAuth, removeAuth, getAuth } from '../storage/auth.storage';
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -27,19 +27,23 @@ export const useAuth = () => {
 
   const { userId, token, message, setAuth, clearAuth } = useAuthStore();
 
+
   const handleLogin = async (data: ILoginRequest) => {
     try {
       setLoading(true);
 
       const response = await login(data);
 
-      setAuth({
+      const authData = {
         userId: response.id,
         token: response.token,
         message: response.message,
-      });
+      };
 
-      await saveToken(response.token);
+      setAuth(authData);
+
+
+      await saveAuth(authData);
 
       return response;
     } finally {
@@ -91,10 +95,10 @@ export const useAuth = () => {
     try {
       setLoading(true);
 
-      const response = await resetPassword(data) 
+      const response = await resetPassword(data);
 
-      if(response !== undefined && response?.message){
-         navigation.navigate('Login')
+      if (response !== undefined && response?.message) {
+        navigation.navigate('Login');
       }
       return response;
     } finally {
@@ -103,10 +107,30 @@ export const useAuth = () => {
   };
 
   const logout = async () => {
-    await removeToken();
+    await removeAuth();
     clearAuth();
   };
 
+  
+  useEffect(() => {
+    const loadAuthFromStorage = async () => {
+      try {
+        const authData = await getAuth();
+        if (authData) {
+          setAuth({
+            userId: authData.userId,
+            token: authData.token,
+            message: authData.message,
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao carregar autenticação:', error);
+      }
+    };
+
+    loadAuthFromStorage();
+  }, [setAuth]);
+  
   return {
     loading,
 
