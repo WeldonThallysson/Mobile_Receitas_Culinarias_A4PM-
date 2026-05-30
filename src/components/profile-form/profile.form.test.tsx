@@ -11,6 +11,9 @@ import {
   ProfileForm,
 } from './profile.form';
 
+
+
+
 jest.mock(
   'react-native-paper',
   () => {
@@ -261,6 +264,34 @@ describe(
         expect(
           mockOnClose,
         ).toHaveBeenCalled();
+      },
+    );
+
+    it(
+      'should format numeric login as CPF when typing only numbers',
+      () => {
+        const {
+          getByTestId,
+        } = render(
+          <ProfileForm
+            visible
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        const loginInput = getByTestId(
+          'login-input',
+        );
+
+        fireEvent.changeText(
+          loginInput,
+          '12345678901',
+        );
+
+        expect(
+          loginInput.props.value,
+        ).toBe('123.456.789-01');
       },
     );
 

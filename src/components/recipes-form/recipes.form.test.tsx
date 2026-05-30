@@ -53,9 +53,11 @@ jest.mock('react-native-paper', () => {
   }: any) => <View>{children}</View>;
 
   return {
-    Portal: ({ children }: any) => children,
+    Portal: ({ children }: any) => <>{children}</>,
 
     Dialog: DialogComponent,
+
+    Text,
 
     HelperText: ({
       children,

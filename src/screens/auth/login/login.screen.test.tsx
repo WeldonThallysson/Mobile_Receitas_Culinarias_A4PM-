@@ -13,6 +13,7 @@ jest.mock(
   'react-native-vector-icons/MaterialIcons',
   () => 'Icon',
 );
+
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: mockNavigate,
@@ -94,6 +95,21 @@ describe('LoginScreen', () => {
     });
 
     expect(mockHandleLogin).toHaveBeenCalledTimes(1);
+  });
+
+  it('should format numeric login as CPF when typing only numbers', () => {
+    const { getByTestId } = render(
+      <LoginScreen />,
+    );
+
+    const loginInput = getByTestId('login-input');
+
+    fireEvent.changeText(
+      loginInput,
+      '12345678901',
+    );
+
+    expect(loginInput.props.value).toBe('123.456.789-01');
   });
 
   it('should navigate to register screen', () => {

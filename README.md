@@ -1,97 +1,183 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Culinary Recipe - Aplicativo de Receitas
 
-# Getting Started
+Um aplicativo React Native para compartilhar e gerenciar receitas culinárias. Permite que usuários façam login, criem receitas, visualizem suas receitas e gerenciem seu perfil.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 📱 Telas da Aplicação
 
-## Step 1: Start Metro
+### Autenticação
+- **Login**: Tela de entrada com e-mail e senha
+- **Register**: Cadastro de novo usuário
+- **Recover Password**: Recuperação de senha via e-mail
+- **Reset Password**: Redefinição de senha com token
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### Aplicativo (após login)
+- **Home (Receitas)**: Lista de receitas com opções para criar, editar e visualizar receitas
+  - Criar receita com categoria, tempo de preparo, porções, ingredientes e modo de preparo
+  - Editar receitas existentes
+  - Deletar receitas
+- **Profile (Perfil)**: Visualizar e editar informações do perfil do usuário
+  - Nome, e-mail, telefone e outros dados
+  - Botão de logout
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 🚀 Como Iniciar
 
-```sh
-# Using npm
+### Pré-requisitos
+- Node.js >= 22.11.0
+- npm ou yarn
+- Android Studio (para rodar no Android)
+- Xcode (para rodar no iOS - macOS apenas)
+- JDK 17+ (para build Android)
+
+### 1️⃣ Instalar Dependências
+
+```bash
+npm install
+# ou
+yarn install
+```
+
+### 2️⃣ Iniciar Metro (em um terminal)
+
+```bash
 npm start
-
-# OR using Yarn
+# ou
 yarn start
 ```
 
-## Step 2: Build and run your app
+### 3️⃣ Rodar o App Localmente
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+#### Android
+```bash
 npm run android
-
-# OR using Yarn
+# ou
 yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
+#### iOS (macOS)
+```bash
+# Instalar CocoaPods (primeira vez apenas)
 bundle install
-```
 
-Then, and every time you update your native dependencies, run:
-
-```sh
+# Instalar pods a cada atualização de dependências nativas
 bundle exec pod install
-```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
+# Rodar no simulador
 npm run ios
-
-# OR using Yarn
+# ou
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## 📦 Gerar APK para Release (Android)
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+### Build Release APK
+```bash
+cd android
+./gradlew assembleRelease
+```
 
-## Step 3: Modify your app
+A APK gerada estará em:
+```
+android/app/build/outputs/apk/release/app-release.apk
+```
 
-Now that you have successfully run the app, let's make changes!
+### Build e Deploy (Bundle para Play Store)
+```bash
+cd android
+./gradlew bundleRelease
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+O bundle gerado estará em:
+```
+android/app/build/outputs/bundle/release/app-release.aab
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## 🔧 Tecnologias Utilizadas
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- **React Native** 0.85.3
+- **React Navigation** - Navegação entre telas
+- **React Hook Form** - Gerenciamento de formulários
+- **Zod** - Validação de schemas
+- **Zustand** - Gerenciamento de estado
+- **React Native Paper** - Componentes UI
+- **Axios** - Requisições HTTP
+- **AsyncStorage** - Persistência local
+- **TypeScript** - Tipagem estática
 
-## Congratulations! :tada:
+## 📁 Estrutura do Projeto
 
-You've successfully run and modified your React Native App. :partying_face:
+```
+src/
+├── api/           # Configuração de requisições HTTP
+├── components/    # Componentes reutilizáveis (formulários, etc)
+├── constants/     # Constantes da aplicação
+├── errors/        # Tratamento de erros
+├── global/        # Temas e configurações globais
+├── hooks/         # Custom hooks (useAuth, useRecipes, etc)
+├── interfaces/    # Interfaces TypeScript
+├── routes/        # Navegação e rotas
+├── schemas/       # Validação com Zod
+├── screens/       # Telas da aplicação
+├── services/      # Serviços de API
+├── storage/       # Armazenamento local
+├── store/         # Estado global (Zustand)
+├── types/         # Tipos TypeScript
+└── utils/         # Utilitários e formatadores
+```
 
-### Now what?
+## 🧪 Testes
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+Executar testes unitários:
+```bash
+npm run test
+# ou
+yarn test
+```
 
-# Troubleshooting
+## ⚙️ Configuração de Ambiente
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+Certifique-se de que as variáveis de ambiente estão configuradas no arquivo `.env` ou no `react-native-config`:
 
-# Learn More
+```env
+API_URL=http://seu-backend-url
+```
 
-To learn more about React Native, take a look at the following resources:
+## 🔄 Recarregar a Aplicação
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Durante desenvolvimento com Fast Refresh:
+- **Android**: Pressione <kbd>R</kbd> duas vezes ou acesse o Dev Menu com <kbd>Ctrl</kbd> + <kbd>M</kbd>
+- **iOS**: Pressione <kbd>R</kbd> no simulador
+
+Para recarregar completo, abanar o dispositivo e selecione "Reload".
+
+## 📝 Notas Importantes
+
+- Token de autenticação é armazenado localmente via AsyncStorage
+- O logout limpa o token e retorna para as telas de autenticação
+- Formatador de tempo: ao digitar minutos no formulário, é exibido como "7min" mas o valor armazenado é apenas "7"
+
+## 🐛 Troubleshooting
+
+**Problema**: Metro não inicia
+- Solução: Kill todos os processos node e tente novamente
+
+**Problema**: Erro ao instalar pods (iOS)
+```bash
+cd ios
+rm -rf Pods Podfile.lock
+bundle exec pod install
+cd ..
+```
+
+**Problema**: Build Android falhando
+```bash
+cd android
+./gradlew clean
+./gradlew assembleRelease
+```
+
+## 📚 Recursos Adicionais
+
+- [React Native Documentation](https://reactnative.dev)
+- [React Navigation](https://reactnavigation.org)
+- [React Hook Form](https://react-hook-form.com)
+- [Zod Documentation](https://zod.dev)

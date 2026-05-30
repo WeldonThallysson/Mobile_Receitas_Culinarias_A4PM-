@@ -16,6 +16,8 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
+
+
 jest.mock('../../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
@@ -96,6 +98,21 @@ describe('RecoverPassword Screen', () => {
     expect(
       mockHandleRecoverPassword,
     ).toHaveBeenCalledTimes(1);
+  });
+
+  it('should format numeric login as CPF when typing only numbers', () => {
+    const { getByTestId } = render(
+      <RecoverPassword />,
+    );
+
+    const loginInput = getByTestId('login-input');
+
+    fireEvent.changeText(
+      loginInput,
+      '12345678901',
+    );
+
+    expect(loginInput.props.value).toBe('123.456.789-01');
   });
 
   it('should display validation error when login is empty', async () => {

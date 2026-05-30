@@ -7,6 +7,7 @@ import {
   Dialog,
   HelperText,
   Portal,
+  Text,
   TextInput,
 } from 'react-native-paper';
 
@@ -15,7 +16,7 @@ import { Dropdown } from 'react-native-paper-dropdown';
 import { Controller, useForm } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-
+ 
 import { ICreateRecipeRequest } from '../../interfaces/api/recipe.interface';
 
 import { useCategories } from '../../hooks/useCategories';
@@ -143,6 +144,8 @@ export const RecipesForm = ({
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 60}
+      
         >
           <Dialog.Title>
             {recipe ? 'Editar receita' : 'Nova receita'}
@@ -152,6 +155,7 @@ export const RecipesForm = ({
             <ScrollView
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.content}
             >
               <View style={styles.content}>
                 <Controller
@@ -197,24 +201,27 @@ export const RecipesForm = ({
                     control={control}
                     name="preparationTimeMinutes"
                     render={({ field: { value, onChange } }) => (
-                      <View style={styles.flex}>
-                        <TextInput
-                          mode="outlined"
-                          label="Tempo (min)"
-                          keyboardType="numeric"
-                          value={value}
-                          disabled={loading}
-                          onChangeText={onChange}
-                        />
+                      <View style={{ ...styles.flex, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+                        <View style={{ flex: 1 }}>
+                          <TextInput
+                            mode="outlined"
+                            label="Tempo (min)"
+                            keyboardType="numeric"
+                            value={value}
+                            disabled={loading}
+                            onChangeText={(text) => onChange(text.replace(/\D+/g, ''))}
+                          />
 
-                        {errors?.preparationTimeMinutes?.message && (
-                          <HelperText
-                            type="error"
-                            visible={!!errors.preparationTimeMinutes}
-                          >
-                            {errors.preparationTimeMinutes?.message}
-                          </HelperText>
-                        )}
+                          {errors?.preparationTimeMinutes?.message && (
+                            <HelperText
+                              type="error"
+                              visible={!!errors.preparationTimeMinutes}
+                            >
+                              {errors.preparationTimeMinutes?.message}
+                            </HelperText>
+                          )}
+                        </View>
+                        <Text style={{ marginBottom: 8, fontSize: 14, fontWeight: '500' }}>min</Text>
                       </View>
                     )}
                   />

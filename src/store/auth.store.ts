@@ -11,6 +11,8 @@ interface IAuthStore {
     message: string;
   }) => void;
 
+  setToken: (token: string | null) => void;
+
   clearAuth: () => void;
 }
 
@@ -24,6 +26,11 @@ export const useAuthStore = create<IAuthStore>((set) => ({
       userId,
       token,
       message,
+    }),
+
+  setToken: (token: string | null) =>
+    set({
+      token,
     }),
 
   clearAuth: () =>

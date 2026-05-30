@@ -12,6 +12,11 @@ import { useAuth } from '../../../hooks/useAuth';
 
 import { useNavigation } from '@react-navigation/native';
 
+jest.mock(
+  'react-native-vector-icons/MaterialIcons',
+  () => 'Icon',
+);
+
 jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
@@ -141,6 +146,21 @@ describe('RegisterScreen', () => {
     expect(
       mockHandleRegister,
     ).toHaveBeenCalledTimes(1);
+  });
+
+  it('should format numeric login as CPF when typing only numbers', () => {
+    const { getByTestId } = render(
+      <RegisterScreen />,
+    );
+
+    const loginInput = getByTestId('login-input');
+
+    fireEvent.changeText(
+      loginInput,
+      '12345678901',
+    );
+
+    expect(loginInput.props.value).toBe('123.456.789-01');
   });
 
   it('should navigate to login screen', () => {

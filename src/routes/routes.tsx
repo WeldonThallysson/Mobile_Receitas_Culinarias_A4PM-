@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 
@@ -9,21 +9,18 @@ import { getToken } from '../storage/auth.storage';
 import { useAuthStore } from '../store/auth.store';
 
 export const Routes = () => {
-  const [token, setToken] = useState<string | null>(null);
-  const tokenAuth = useAuthStore(
-    (state) => state.token,
-  );
+  const token = useAuthStore((state) => state.token);
+  const setToken = useAuthStore((state) => state.setToken);
 
   useEffect(() => {
     const loadToken = async () => {
       const tokenStored = await getToken();
 
       setToken(tokenStored);
-
     };
 
     loadToken();
-  }, [tokenAuth]);
+  }, [setToken]);
 
   return (
     <NavigationContainer>

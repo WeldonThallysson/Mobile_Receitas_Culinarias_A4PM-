@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, Pressable, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
 import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 
@@ -16,6 +16,7 @@ import {
 } from '../../../schemas/recover-password.schema';
 
 import { styles } from './recover-password.screen.styles';
+import { parseCPFOrEmail } from '../../../utils/formatters/character';
 
 const RecoverPassword = () => {
   const navigation = useNavigation<any>();
@@ -41,48 +42,56 @@ const RecoverPassword = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineMedium">Recuperar senha</Text>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{
-          gap: 10,
-        }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 60}
+      style={styles.container}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', gap: 12, paddingBottom: 24 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <Controller
-          control={control}
-          name="login"
-          render={({ field: { value, onChange } }) => (
-            <>
-              <TextInput
-                mode="outlined"
-                label="Login"
-                value={value}
-                onChangeText={onChange}
-                testID="login-input"
-              />
+        <Text variant="headlineMedium">Recuperar senha</Text>
 
-              {errors.login?.message && (
-                <HelperText type="error" visible={!!errors.login}>
-                  {errors.login?.message}
-                </HelperText>
-              )}
-            </>
-          )}
-        />
-      </KeyboardAvoidingView>
+        <View style={{ gap: 10 }}>
+          <Controller
+            control={control}
+            name="login"
+            render={({ field: { value, onChange } }) => (
+              <>
+                <TextInput
+                  mode="outlined"
+                  label="Login"
+                  placeholder="E-mail ou CPF"
+                  value={value}
+                  onChangeText={(text) => onChange(parseCPFOrEmail(text))}
+                  testID="login-input"
+                />
 
-      <Button
-        mode="contained"
-        loading={loading}
-        onPress={handleSubmit(onSubmit)}
-      >
-        Recuperar
-      </Button>
-      <Button mode="text" onPress={() => navigation.navigate('Login')}>
-        <Text variant="bodyMedium">Você possui uma conta? Realize o login</Text>
-      </Button>
-    </View>
+                {errors.login?.message && (
+                  <HelperText type="error" visible={!!errors.login}>
+                    {errors.login?.message}
+                  </HelperText>
+                )}
+              </>
+            )}
+          />
+        </View>
+
+        <Button
+          mode="contained"
+          loading={loading}
+          onPress={handleSubmit(onSubmit)}
+        >
+          Recuperar
+        </Button>
+
+        <Button mode="text" onPress={() => navigation.navigate('Login')}>
+          <Text variant="bodyMedium">Você possui uma conta? Realize o login</Text>
+        </Button>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

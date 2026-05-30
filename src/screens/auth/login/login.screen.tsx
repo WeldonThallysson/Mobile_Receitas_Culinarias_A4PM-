@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
 import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 
@@ -13,11 +13,15 @@ import { LoginFormData, loginSchema } from '../../../schemas/login.schema';
 import { styles } from './login.screen.styles';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useState } from 'react';
+import { parseCPFOrEmail } from '../../../utils/formatters/character';
 
 const LoginScreen = () => {
   const navigation = useNavigation<any>();
 
   const { handleLogin, loading } = useAuth();
+  
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     control,
@@ -37,9 +41,18 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Icon name="restaurant-menu" size={80} color="#2563EB" />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 60}
+      style={styles.container}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', gap: 10, paddingBottom: 24 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <Icon name="restaurant-menu" size={80} color="#2563EB" />
 
         <Text variant="headlineMedium" style={styles.title}>
           Receitas Culinárias
@@ -47,56 +60,57 @@ const LoginScreen = () => {
 
         <Text style={styles.subtitle}>Organize suas receitas favoritas</Text>
       </View>
-       <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{
-            gap: 10
-          }}
-        >
-    <Controller
-        control={control}
-        name="login"
-        render={({ field: { value, onChange } }) => (
-          <>
-            <TextInput
-              testID="login-input"
-              mode="outlined"
-              label="Login"
-              value={value}
-              onChangeText={onChange}
-            />
-            {errors?.login?.message && (
-              <HelperText type="error" visible={!!errors.login}>
-                {errors.login?.message}
-              </HelperText>
+        <View style={{ gap: 10 }}>
+          <Controller
+            control={control}
+            name="login"
+            render={({ field: { value, onChange } }) => (
+              <>
+                <TextInput
+                  testID="login-input"
+                  mode="outlined"
+                  label="Login"
+                  placeholder="E-mail ou CPF"
+                  value={value}
+                  onChangeText={(text) => onChange(parseCPFOrEmail(text))}
+                />
+                {errors?.login?.message && (
+                  <HelperText type="error" visible={!!errors.login}>
+                    {errors.login?.message}
+                  </HelperText>
+                )}
+              </>
             )}
-          </>
-        )}
-      />
+          />
 
-      <Controller
-        control={control}
-        name="password"
-        render={({ field: { value, onChange } }) => (
-          <>
-            <TextInput
-              testID="password-input"
-              mode="outlined"
-              label="Senha"
-              secureTextEntry
-              value={value}
-              onChangeText={onChange}
-            />
-            {errors.password?.message && (
-              <HelperText type="error" visible={!!errors.password}>
-                {errors.password?.message}
-              </HelperText>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { value, onChange } }) => (
+              <>
+                <TextInput
+                  testID="password-input"
+                  mode="outlined"
+                  label="Senha"
+                  secureTextEntry={!showPassword}
+                  value={value}
+                  onChangeText={onChange}
+                  right={
+                    <TextInput.Icon
+                      icon={showPassword ? 'eye' : 'eye-off'}
+                      onPress={() => setShowPassword(!showPassword)}
+                    />
+                  }
+                />
+                {errors.password?.message && (
+                  <HelperText type="error" visible={!!errors.password}>
+                    {errors.password?.message}
+                  </HelperText>
+                )}
+              </>
             )}
-          </>
-        )}
-      />
-
-        </KeyboardAvoidingView>
+          />
+        </View>
   
 
       <Button
@@ -117,7 +131,8 @@ const LoginScreen = () => {
       >
         Recuperar senha
       </Button>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

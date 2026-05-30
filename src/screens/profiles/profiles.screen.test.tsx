@@ -15,6 +15,11 @@ jest.mock('../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock(
+  'react-native-vector-icons/MaterialIcons',
+  () => 'Icon',
+);
+
 jest.mock('../../hooks/useUsers', () => ({
   useUsers: jest.fn(),
 }));

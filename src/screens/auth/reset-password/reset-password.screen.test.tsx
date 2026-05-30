@@ -24,6 +24,11 @@ jest.mock('../../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock(
+  'react-native-vector-icons/MaterialIcons',
+  () => 'Icon',
+);
+
 const mockHandleResetPassword = jest.fn();
 
 const mockNavigate = jest.fn();

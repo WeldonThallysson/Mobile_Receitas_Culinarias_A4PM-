@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
@@ -13,6 +13,7 @@ import {
 import { Controller, useForm } from 'react-hook-form';
 
 import { styles } from './profile.form.styles';
+import { parseCPFOrEmail } from '../../utils/formatters/character';
 
 export interface ProfileFormData {
   name: string;
@@ -41,6 +42,8 @@ export const ProfileForm = ({
   onClose,
   onSubmit,
 }: ProfileFormProps) => {
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -82,9 +85,15 @@ export const ProfileForm = ({
         <Dialog.Title>Atualizar perfil</Dialog.Title>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 60}
+     
         >
           <Dialog.ScrollArea>
-            <ScrollView keyboardShouldPersistTaps="handled">
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.content}
+              showsVerticalScrollIndicator={false}
+            >
               <View style={styles.content}>
                 <Controller
                   control={control}
@@ -115,8 +124,9 @@ export const ProfileForm = ({
                       <TextInput
                         testID="login-input"
                         label="Login"
+                        placeholder="E-mail ou CPF"
                         value={value}
-                        onChangeText={onChange}
+                        onChangeText={(text) => onChange(parseCPFOrEmail(text))}
                         disabled={loading}
                       />
 
@@ -137,10 +147,16 @@ export const ProfileForm = ({
                       <TextInput
                         testID="password-input"
                         label="Senha"
-                        secureTextEntry
+                        secureTextEntry={!showPassword}
                         value={value}
                         onChangeText={onChange}
                         disabled={loading}
+                        right={
+                          <TextInput.Icon
+                            icon={showPassword ? 'eye' : 'eye-off'}
+                            onPress={() => setShowPassword(!showPassword)}
+                          />
+                        }
                       />
 
                       {errors.password?.message && (
