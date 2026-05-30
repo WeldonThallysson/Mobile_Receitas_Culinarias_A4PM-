@@ -93,7 +93,7 @@ export const styles = StyleSheet.create({
   },
 
   divider: {
-    marginVertical: 20,
+    marginVertical: 15,
   },
 
   actions: {
