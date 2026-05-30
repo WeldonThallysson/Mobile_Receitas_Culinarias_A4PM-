@@ -1,5 +1,5 @@
-import { api } from '../api/api'; 
-import { USERS_ENDPOINTS } from './path-endpoints/users.endpoints'; 
+import { api } from '../api/api';
+import { USERS_ENDPOINTS } from './path-endpoints/users.endpoints';
 
 import {
   IListUsersParams,
@@ -11,44 +11,58 @@ import {
 export const listUsers = async (
   params?: IListUsersParams,
 ): Promise<IListUsersResponse> => {
-  const response = await api.get(
-    USERS_ENDPOINTS.LIST,
-    {
-      params,
-    },
-  );
+  try {
+    const response = await api.get(
+      USERS_ENDPOINTS.LIST,
+      { params },
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 export const findUser = async (
   id: number,
 ): Promise<IUser> => {
-  const response = await api.get(
-    USERS_ENDPOINTS.FIND(id),
-  );
+  try {
+    const response = await api.get(
+      USERS_ENDPOINTS.FIND(id),
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 export const updateUser = async (
   id: number,
   data: IUpdateUserRequest,
 ): Promise<{ message: string }> => {
-  const response = await api.put(
-    USERS_ENDPOINTS.UPDATE(id),
-    data,
-  );
+  try {
+    const response = await api.put(
+      USERS_ENDPOINTS.UPDATE(id),
+      data,
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };
 
 export const deleteUser = async (
   id: number,
 ): Promise<{ message: string }> => {
-  const response = await api.delete(
-    USERS_ENDPOINTS.DELETE(id),
-  );
+  try {
+    const response = await api.delete(
+      USERS_ENDPOINTS.DELETE(id),
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
 };

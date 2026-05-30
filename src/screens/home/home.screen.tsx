@@ -24,6 +24,7 @@ import { RecipesForm } from '../../components/recipes-form/recipes.form';
 import { ICreateRecipeRequest } from '../../interfaces/api/recipe.interface';
 
 import { styles } from './home.screen.styles';
+import { theme } from '../../global/theme';
 
 const HomeScreen = () => {
   const { message } = useAuth();
@@ -121,10 +122,9 @@ const HomeScreen = () => {
     closeDeleteModal();
   };
 
+  const subMessage = "Gerencie suas receitas culinárias de forma simples"
   return (
     <View style={styles.container}>
-
-
       <FlatList
         data={filteredRecipes}
         keyExtractor={item => String(item.id)}
@@ -135,13 +135,21 @@ const HomeScreen = () => {
         ListHeaderComponent={
           <>
             <View style={styles.hero}>
-              <Text variant="headlineMedium" style={styles.heroTitle}>
-                {message}
-              </Text>
+              {message && (
+                <Text variant="headlineMedium" style={styles.heroTitle}>
+                  {message}
+                </Text>
+              )}
 
-              <Text variant="bodyLarge" style={styles.heroSubtitle}>
-                Gerencie suas receitas culinárias de forma simples.
-              </Text>
+              {message ? (
+                <Text variant="headlineMedium" style={styles.heroTitle}>
+                  {subMessage}
+                </Text>
+              ) : (
+                <Text variant="bodyLarge" style={styles.heroSubtitle}>
+                 {subMessage}
+                </Text>
+              )}
             </View>
 
             <Searchbar
@@ -154,21 +162,18 @@ const HomeScreen = () => {
         }
         ListEmptyComponent={() => (
           <View style={styles.empty}>
-        
-              <Icon name="restaurant" size={72} color="#BDBDBD" />
+            <Icon name="restaurant" size={72} color="#BDBDBD" />
 
-              <Text variant="titleMedium">Nenhuma receita encontrada</Text>
-              {search.length !== 0 ? (
-                   <Text variant="bodyMedium">
-                Você ainda não cadastrou essa receita - {search} 
+            <Text variant="titleMedium">Nenhuma receita encontrada</Text>
+            {search.length !== 0 ? (
+              <Text variant="bodyMedium">
+                Você ainda não cadastrou essa receita - {search}
               </Text>
-              ) : (
-                
-    <Text variant="bodyMedium">
+            ) : (
+              <Text variant="bodyMedium">
                 Cadastre uma nova receita para começar.
               </Text>
-              )}
-             
+            )}
           </View>
         )}
         ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
@@ -176,7 +181,11 @@ const HomeScreen = () => {
           <Card style={styles.card}>
             <Card.Content>
               <View style={styles.badge}>
-                <Icon name="category" size={14} color="#6A1B9A" />
+                <Icon
+                  name="local-offer"
+                  size={14}
+                  color={theme.colors?.primary}
+                />
 
                 <Text style={styles.badgeText}>{item.category?.name}</Text>
               </View>
@@ -193,11 +202,7 @@ const HomeScreen = () => {
                 </View>
 
                 <View style={styles.infoRow}>
-                  <Icon
-                    name="restaurant-menu"
-                    size={18}
-                    color="#616161"
-                  />
+                  <Icon name="restaurant-menu" size={18} color="#616161" />
 
                   <Text>{item.servings} porções</Text>
                 </View>
@@ -221,6 +226,7 @@ const HomeScreen = () => {
                 <Button
                   mode="contained-tonal"
                   icon="pencil"
+                  style={styles.actions_edit}
                   onPress={() => openEditModal(item)}
                 >
                   Editar
@@ -237,19 +243,16 @@ const HomeScreen = () => {
             </Card.Content>
           </Card>
         )}
-        ListFooterComponent={
-          <Button
-            mode="contained"
-            icon="plus"
-            style={styles.createButton}
-            contentStyle={styles.createButtonContent}
-            onPress={openCreateModal}
-          >
-            Cadastrar nova receita
-          </Button>
-        }
       />
-
+      <Button
+        mode="contained"
+        icon="plus"
+        style={styles.createButton}
+        contentStyle={styles.createButtonContent}
+        onPress={openCreateModal}
+      >
+        Cadastrar nova receita
+      </Button>
       <RecipesForm
         visible={formVisible}
         loading={submitLoading}

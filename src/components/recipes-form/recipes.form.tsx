@@ -48,6 +48,7 @@ export const RecipesForm = ({
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<RecipeFormData>({
     resolver: zodResolver(recipeSchema),
@@ -131,6 +132,11 @@ export const RecipesForm = ({
     onClose();
   };
 
+  useEffect(() => {
+    if (recipe && categories.length > 0) {
+      setValue('category_id', String(recipe.category_id));
+    }
+  }, [recipe, categories]);
   return (
     <Portal>
       <Dialog
@@ -151,29 +157,20 @@ export const RecipesForm = ({
               <Controller
                 control={control}
                 name="category_id"
-                render={({ field: { value, onChange } }) => (
-                  <>
+                render={({ field: { value, onChange } }) => {
+                  return (
                     <Dropdown
                       label="Categoria"
-                      placeholder="Selecione"
                       value={value}
                       onSelect={onChange}
-                      disabled={loading}
                       options={categories.map(category => ({
                         label: category.name,
-
                         value: String(category.id),
                       }))}
                     />
-                    {errors?.category_id?.message && (
-                      <HelperText type="error" visible={!!errors.category_id}>
-                        {errors.category_id?.message}
-                      </HelperText>
-                    )}
-                  </>
-                )}
+                  );
+                }}
               />
-
               <Controller
                 control={control}
                 name="name"

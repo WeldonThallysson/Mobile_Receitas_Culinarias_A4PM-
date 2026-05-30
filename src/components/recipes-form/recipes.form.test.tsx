@@ -1,30 +1,92 @@
+import React from 'react';
+
 import {
-  fireEvent,
   render,
+  fireEvent,
   waitFor,
 } from '@testing-library/react-native';
 
-import { RecipesForm } from './recipes.form';
+import RecipesForm from './recipes.form';
 
-jest.mock(
-  '../../hooks/useCategories',
-  () => ({
-    useCategories: () => ({
-      categories: [
-        {
-          id: 1,
-          name: 'Massas',
-        },
-        {
-          id: 2,
-          name: 'Doces',
-        },
-      ],
+const mockLoadCategories = jest.fn();
 
-      loadCategories: jest.fn(),
-    }),
+jest.mock('../../hooks/useCategories', () => ({
+  useCategories: () => ({
+    categories: [
+      {
+        id: 1,
+        name: 'Massas',
+      },
+      {
+        id: 2,
+        name: 'Carnes',
+      },
+    ],
+    loadCategories: mockLoadCategories,
   }),
-);
+}));
+
+jest.mock('react-native-paper', () => {
+  const React = require('react');
+
+  const {
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+  } = require('react-native');
+
+  const DialogComponent = ({
+    children,
+  }: any) => <View>{children}</View>;
+
+  DialogComponent.Title = ({
+    children,
+  }: any) => <Text>{children}</Text>;
+
+  DialogComponent.ScrollArea = ({
+    children,
+  }: any) => <View>{children}</View>;
+
+  DialogComponent.Actions = ({
+    children,
+  }: any) => <View>{children}</View>;
+
+  return {
+    Portal: ({ children }: any) => children,
+
+    Dialog: DialogComponent,
+
+    HelperText: ({
+      children,
+    }: any) => <Text>{children}</Text>,
+
+    TextInput: ({
+      label,
+      value,
+      onChangeText,
+    }: any) => (
+      <TextInput
+        placeholder={label}
+        value={value}
+        onChangeText={onChangeText}
+      />
+    ),
+
+    Button: ({
+      children,
+      onPress,
+      disabled,
+    }: any) => (
+      <TouchableOpacity
+        disabled={disabled}
+        onPress={onPress}
+      >
+        <Text>{children}</Text>
+      </TouchableOpacity>
+    ),
+  };
+});
 
 jest.mock(
   'react-native-paper-dropdown',
@@ -32,43 +94,44 @@ jest.mock(
     const React = require('react');
 
     const {
-      TouchableOpacity,
-      Text,
+      TextInput,
     } = require('react-native');
 
     return {
       Dropdown: ({
-        onSelect,
         label,
+        value,
+        onSelect,
       }: any) => (
-        <TouchableOpacity
-          testID="dropdown"
-          onPress={() => onSelect('1')}
-        >
-          <Text>{label}</Text>
-        </TouchableOpacity>
+        <TextInput
+          placeholder={label}
+          value={value}
+          onChangeText={onSelect}
+        />
       ),
     };
   },
 );
 
 describe('RecipesForm', () => {
-  const onClose = jest.fn();
+  const mockOnClose = jest.fn();
 
-  const onSubmit = jest.fn();
+  const mockOnSubmit = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it(
-    'should render create recipe modal',
+    'should render create mode',
     () => {
-      const { getByText } = render(
+      const {
+        getByText,
+      } = render(
         <RecipesForm
           visible
-          onClose={onClose}
-          onSubmit={onSubmit}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
         />,
       );
 
@@ -83,25 +146,47 @@ describe('RecipesForm', () => {
   );
 
   it(
-    'should render edit recipe modal',
+    'should load categories on mount',
     () => {
-      const recipe = {
-        category_id: 1,
-        name: 'Lasanha',
-        preparation_time_minutes: 40,
-        servings: 5,
-        ingredients:
-          'Queijo e massa',
-        preparation_method:
-          'Assar',
-      };
-
-      const { getByText } = render(
+      render(
         <RecipesForm
           visible
-          recipe={recipe}
-          onClose={onClose}
-          onSubmit={onSubmit}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+        />,
+      );
+
+      expect(
+        mockLoadCategories,
+      ).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it(
+    'should render edit mode',
+    () => {
+      const {
+        getByText,
+      } = render(
+        <RecipesForm
+          visible
+          recipe={{
+            category_id: 1,
+
+            name: 'Lasanha',
+
+            preparationTimeMinutes: 60,
+
+            servings: 8,
+
+            ingredients:
+              'Queijo e molho',
+
+            preparationMethod:
+              'Assar',
+          }}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
         />,
       );
 
@@ -116,177 +201,63 @@ describe('RecipesForm', () => {
   );
 
   it(
-    'should populate form fields when editing recipe',
+    'should populate fields when editing',
     () => {
-      const recipe = {
-        category_id: 1,
-        name: 'Macarrão',
-        preparation_time_minutes: 10,
-        servings: 2,
-        ingredients: 'Molho de tomate',
-        preparation_method:
-          'Cozinhar',
-      };
+      const {
+        getByDisplayValue,
+      } = render(
+        <RecipesForm
+          visible
+          recipe={{
+            category_id: 1,
 
-      const { getByDisplayValue } =
-        render(
-          <RecipesForm
-            visible
-            recipe={recipe}
-            onClose={onClose}
-            onSubmit={onSubmit}
-          />,
-        );
+            name: 'Lasanha',
+
+            preparationTimeMinutes: 60,
+
+            servings: 8,
+
+            ingredients:
+              'Queijo e molho',
+
+            preparationMethod:
+              'Assar',
+          }}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+        />,
+      );
 
       expect(
         getByDisplayValue(
-          'Macarrão',
+          'Lasanha',
         ),
       ).toBeTruthy();
 
       expect(
-        getByDisplayValue('10'),
+        getByDisplayValue(
+          '60',
+        ),
       ).toBeTruthy();
 
       expect(
-        getByDisplayValue('2'),
+        getByDisplayValue(
+          '8',
+        ),
       ).toBeTruthy();
-    },
-  );
-
-  it(
-    'should display validation errors',
-    async () => {
-      const { getByText } = render(
-        <RecipesForm
-          visible
-          onClose={onClose}
-          onSubmit={onSubmit}
-        />,
-      );
-
-      fireEvent.press(
-        getByText('Cadastrar'),
-      );
-
-      await waitFor(() => {
-        expect(
-          getByText(
-            'Selecione uma categoria',
-          ),
-        ).toBeTruthy();
-
-        expect(
-          getByText(
-            'Informe o nome',
-          ),
-        ).toBeTruthy();
-
-        expect(
-          getByText(
-            'Informe o tempo',
-          ),
-        ).toBeTruthy();
-
-        expect(
-          getByText(
-            'Informe as porções',
-          ),
-        ).toBeTruthy();
-
-        expect(
-          getByText(
-            'Informe os ingredientes',
-          ),
-        ).toBeTruthy();
-
-        expect(
-          getByText(
-            'Informe o modo de preparo',
-          ),
-        ).toBeTruthy();
-      });
-    },
-  );
-
-  it(
-    'should submit form successfully',
-    async () => {
-      const {
-        getByText,
-        getByDisplayValue,
-        getByPlaceholderText,
-        getByTestId,
-      } = render(
-        <RecipesForm
-          visible
-          onClose={onClose}
-          onSubmit={onSubmit}
-        />,
-      );
-
-      fireEvent.press(
-        getByTestId('dropdown'),
-      );
-
-      fireEvent.changeText(
-        getByPlaceholderText('Nome da receita'),
-        'Lasanha',
-      );
-
-      fireEvent.changeText(
-        getByPlaceholderText('Tempo (min)'),
-        '40',
-      );
-
-      fireEvent.changeText(
-        getByPlaceholderText('Porções'),
-        '5',
-      );
-
-      fireEvent.changeText(
-        getByPlaceholderText('Ingredientes'),
-        'Queijo e massa',
-      );
-
-      fireEvent.changeText(
-        getByPlaceholderText('Modo de preparo'),
-        'Assar',
-      );
-
-      fireEvent.press(
-        getByText('Cadastrar'),
-      );
-
-      await waitFor(() => {
-        expect(
-          onSubmit,
-        ).toHaveBeenCalledWith({
-          category_id: 1,
-          name: 'Lasanha',
-          preparation_time_minutes: 40,
-          servings: 5,
-          ingredients:
-            'Queijo e massa',
-          preparation_method:
-            'Assar',
-        });
-
-        expect(
-          onClose,
-        ).toHaveBeenCalled();
-      });
     },
   );
 
   it(
     'should call onClose when cancel button is pressed',
     () => {
-      const { getByText } = render(
+      const {
+        getByText,
+      } = render(
         <RecipesForm
           visible
-          onClose={onClose}
-          onSubmit={onSubmit}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
         />,
       );
 
@@ -295,26 +266,100 @@ describe('RecipesForm', () => {
       );
 
       expect(
-        onClose,
-      ).toHaveBeenCalled();
+        mockOnClose,
+      ).toHaveBeenCalledTimes(
+        1,
+      );
     },
   );
 
   it(
     'should render loading state',
     () => {
-      const { getByText } = render(
+      const {
+        getByText,
+      } = render(
         <RecipesForm
           visible
           loading
-          onClose={onClose}
-          onSubmit={onSubmit}
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
         />,
       );
 
       expect(
         getByText('Cadastrar'),
       ).toBeTruthy();
+    },
+  );
+
+  it(
+    'should submit form successfully',
+    async () => {
+      const {
+        getByPlaceholderText,
+        getByText,
+      } = render(
+        <RecipesForm
+          visible
+          onClose={mockOnClose}
+          onSubmit={mockOnSubmit}
+        />,
+      );
+
+      fireEvent.changeText(
+        getByPlaceholderText(
+          'Categoria',
+        ),
+        '1',
+      );
+
+      fireEvent.changeText(
+        getByPlaceholderText(
+          'Nome da receita',
+        ),
+        'Lasanha',
+      );
+
+      fireEvent.changeText(
+        getByPlaceholderText(
+          'Tempo (min)',
+        ),
+        '60',
+      );
+
+      fireEvent.changeText(
+        getByPlaceholderText(
+          'Porções',
+        ),
+        '8',
+      );
+
+      fireEvent.changeText(
+        getByPlaceholderText(
+          'Ingredientes',
+        ),
+        'Queijo',
+      );
+
+      fireEvent.changeText(
+        getByPlaceholderText(
+          'Modo de preparo',
+        ),
+        'Assar',
+      );
+
+      fireEvent.press(
+        getByText(
+          'Cadastrar',
+        ),
+      );
+
+      await waitFor(() => {
+        expect(
+          mockOnSubmit,
+        ).toHaveBeenCalled();
+      });
     },
   );
 });

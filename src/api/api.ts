@@ -4,7 +4,7 @@ import axios, {
 
 import Config from 'react-native-config';
 
-import { AppError } from '../errors/app.error';
+import Toast from 'react-native-toast-message';
 
 import { getToken } from '../storage/auth.storage';
 
@@ -12,10 +12,8 @@ export const api = axios.create({
   baseURL:
     Config.APP_API_URL ||
     'https://backend-receitas-culinarias-a4-pm.vercel.app',
-
 });
 
-console.log({api})
 api.interceptors.request.use(
   async config => {
     const token = await getToken();
@@ -26,44 +24,69 @@ api.interceptors.request.use(
 
     return config;
   },
-
-  error => Promise.reject(error),
 );
 
+
+
 api.interceptors.response.use(
-  response => response,
+  undefined,
 
   (error: AxiosError<any>) => {
+    let message = 'Erro interno do servidor';
+
     if (error.response) {
-      const message =
+      const extractMessageFromHtml = (
+        html: string,
+      ) => {
+        try {
+          const preMatch = html.match(
+            /<pre[^>]*>([\s\S]*?)<\/pre>/i,
+          );
+
+          const content = preMatch
+            ? preMatch[1]
+            : html;
+
+          const text = content
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/&nbsp;/gi, ' ')
+            .replace(/&amp;/gi, '&')
+            .replace(/<[^>]+>/g, '')
+            .trim();
+
+          const firstLine = text
+            .split('\n')
+            .map(l => l.trim())
+            .find(Boolean);
+
+          return firstLine
+            ? firstLine
+                .replace(/^AppError:\s*/i, '')
+                .trim()
+            : text || null;
+        } catch {
+          return null;
+        }
+      };
+
+      message =
         error.response.data?.message ||
+        (typeof error.response.data === 'string'
+          ? extractMessageFromHtml(
+              error.response.data,
+            )
+          : undefined) ||
         'Erro interno do servidor';
-
-      const statusCode =
-        error.response.status || 500;
-
-      return Promise.reject(
-        new AppError(
-          message,
-          statusCode,
-        ),
-      );
     }
 
-    if (error.request) {
-      return Promise.reject(
-        new AppError(
-          'Não foi possível conectar ao servidor.',
-          500,
-        ),
-      );
-    }
+    Toast.show({
+      type: 'error',
+      text1: message,
+    });
 
-    return Promise.reject(
-      new AppError(
-        'Ocorreu um erro inesperado.',
-        500,
-      ),
-    );
+    return Promise.resolve({
+      data: null,
+      status: error.response?.status ?? 500,
+    });
   },
 );

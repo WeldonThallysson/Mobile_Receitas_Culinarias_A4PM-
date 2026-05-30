@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import {
-  useNavigation,
-} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import {
   login,
@@ -20,34 +18,20 @@ import {
   IResetPasswordRequest,
 } from '../interfaces/api/auth.interface';
 
-import {
-  saveToken,
-  removeToken,
-} from '../storage/auth.storage';
+import { saveToken, removeToken } from '../storage/auth.storage';
 
 export const useAuth = () => {
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const navigation =
-    useNavigation<any>();
+  const navigation = useNavigation<any>();
 
-  const {
-    userId,
-    token,
-    message,
-    setAuth,
-    clearAuth,
-  } = useAuthStore();
+  const { userId, token, message, setAuth, clearAuth } = useAuthStore();
 
-  const handleLogin = async (
-    data: ILoginRequest,
-  ) => {
+  const handleLogin = async (data: ILoginRequest) => {
     try {
       setLoading(true);
 
-      const response =
-        await login(data);
+      const response = await login(data);
 
       setAuth({
         userId: response.id,
@@ -55,9 +39,7 @@ export const useAuth = () => {
         message: response.message,
       });
 
-      await saveToken(
-        response.token,
-      );
+      await saveToken(response.token);
 
       return response;
     } finally {
@@ -65,18 +47,15 @@ export const useAuth = () => {
     }
   };
 
-  const handleRegister = async (
-    data: IRegisterRequest,
-  ) => {
+  const handleRegister = async (data: IRegisterRequest) => {
     try {
       setLoading(true);
 
-      const response =
-        await register(data);
+      const response = await register(data);
 
-      navigation.navigate(
-        'Login',
-      );
+      if (response.message) {
+        navigation.navigate('Login');
+      }
 
       return response;
     } finally {
@@ -84,53 +63,47 @@ export const useAuth = () => {
     }
   };
 
-  const handleRecoverPassword =
-    async (
-      data: IRecoverPasswordRequest,
-    ) => {
-      try {
-        setLoading(true);
+  const handleRecoverPassword = async (data: IRecoverPasswordRequest) => {
+    try {
+      setLoading(true);
 
-        const response =
-          await recoverPassword(data);
+      const { resetToken, message, canResetPassword } = await recoverPassword(
+        data,
+      );
 
-        navigation.navigate(
-          'ResetPassword',
-          {
-            token:
-              response.resetToken as string,
-          },
-        );
-
-        return response;
-      } finally {
-        setLoading(false);
+      if (resetToken) {
+        navigation.navigate('ResetPassword', {
+          token: resetToken as string,
+        });
       }
-    };
 
-  const handleResetPassword =
-    async (
-      data: IResetPasswordRequest,
-    ) => {
-      try {
-        setLoading(true);
+      return {
+        resetToken,
+        message,
+        canResetPassword,
+      };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        const response =
-          await resetPassword(data);
+  const handleResetPassword = async (data: IResetPasswordRequest) => {
+    try {
+      setLoading(true);
 
-        navigation.navigate(
-          'Login',
-        );
+      const response = await resetPassword(data) 
 
-        return response;
-      } finally {
-        setLoading(false);
+      if(response !== undefined && response?.message){
+         navigation.navigate('Login')
       }
-    };
+      return response;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const logout = async () => {
     await removeToken();
-
     clearAuth();
   };
 

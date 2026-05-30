@@ -47,7 +47,7 @@ const AppRoutes = () => {
         component={HomeScreen}
         options={{
           title: 'Receitas',
-          headerLeft: () => <IconButton icon="logout" onPress={logout} />,
+          headerLeft: () => <IconButton icon="logout" onPress={() => logout()} />,
         }}
       />
 

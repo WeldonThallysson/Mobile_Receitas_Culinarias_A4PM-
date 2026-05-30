@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
   },
 
   content: {
-    gap: 2,
+    gap: 8,
     paddingVertical: 8,
   },
 

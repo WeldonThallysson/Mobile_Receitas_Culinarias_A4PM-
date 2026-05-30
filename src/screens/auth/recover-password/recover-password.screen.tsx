@@ -57,9 +57,11 @@ const RecoverPassword = () => {
               testID="login-input"
             />
 
-            <HelperText type="error" visible={!!errors.login}>
-              {errors.login?.message}
-            </HelperText>
+            {errors.login?.message && (
+              <HelperText type="error" visible={!!errors.login}>
+                {errors.login?.message}
+              </HelperText>
+            )}
           </>
         )}
       />

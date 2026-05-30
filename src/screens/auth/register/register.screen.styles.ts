@@ -6,6 +6,6 @@ export const styles = StyleSheet.create({
     padding: 24,
     justifyContent: 'center',
    
-    gap: 16,
+    gap: 12,
   },
 });

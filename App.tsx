@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PaperProvider } from 'react-native-paper';
 
 import { Routes } from './src/routes/routes';
+import Toast from 'react-native-toast-message';
 
 import { theme } from './src/global/theme';
 
@@ -27,6 +28,7 @@ export const App = () => {
         />
 
         <Routes />
+        <Toast />
       </SafeAreaProvider>
     </PaperProvider>
   );

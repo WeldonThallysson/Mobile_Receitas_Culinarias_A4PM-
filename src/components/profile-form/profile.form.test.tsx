@@ -1,97 +1,397 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { ProfileForm } from './profile.form';
+import React from 'react';
 
-const mockOnClose = jest.fn();
-const mockOnSubmit = jest.fn();
+import {
+  fireEvent,
+  render,
+  waitFor,
+} from '@testing-library/react-native';
 
-describe('ProfileForm', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+import {
+  ProfileForm,
+} from './profile.form';
 
-  it('should render form when visible', () => {
-    const { getByText } = render(
-      <ProfileForm
-        visible
-        loading={false}
-        onClose={mockOnClose}
-        onSubmit={mockOnSubmit}
-      />,
+jest.mock(
+  'react-native-paper',
+  () => {
+    const React = require('react');
+
+    const {
+      Text,
+      TextInput,
+      TouchableOpacity,
+      View,
+    } = require('react-native');
+
+    const Button = ({
+      children,
+      onPress,
+      disabled,
+      testID,
+    }: any) => (
+      <TouchableOpacity
+        testID={testID}
+        onPress={onPress}
+        disabled={disabled}
+      >
+        <Text>{children}</Text>
+      </TouchableOpacity>
     );
 
-    expect(getByText('Atualizar perfil')).toBeTruthy();
-  });
+    const Dialog = ({
+      children,
+      visible,
+    }: any) =>
+      visible ? (
+        <View>{children}</View>
+      ) : null;
 
-  it('should update form fields', () => {
-    const { getByTestId } = render(
-      <ProfileForm
-        visible
-        loading={false}
-        onClose={mockOnClose}
-        onSubmit={mockOnSubmit}
-      />,
+    Dialog.Title = ({
+      children,
+    }: any) => (
+      <Text>{children}</Text>
     );
 
-    fireEvent.changeText(getByTestId('name-input'), 'novo nome');
-    fireEvent.changeText(getByTestId('login-input'), 'novo login');
-    fireEvent.changeText(getByTestId('password-input'), '123');
-
-    expect(getByTestId('name-input').props.value).toBe('novo nome');
-    expect(getByTestId('login-input').props.value).toBe('novo login');
-    expect(getByTestId('password-input').props.value).toBe('123');
-  });
-
-  it('should submit form correctly', async () => {
-    const { getByText, getByTestId } = render(
-      <ProfileForm
-        visible
-        loading={false}
-        onClose={mockOnClose}
-        onSubmit={mockOnSubmit}
-      />,
+    Dialog.ScrollArea = ({
+      children,
+    }: any) => (
+      <View>{children}</View>
     );
 
-    fireEvent.changeText(getByTestId('name-input'), 'novo nome');
-    fireEvent.changeText(getByTestId('login-input'), 'novo login');
-    fireEvent.changeText(getByTestId('password-input'), '123456');
+    Dialog.Actions = ({
+      children,
+    }: any) => (
+      <View>{children}</View>
+    );
 
-    fireEvent.press(getByText('Salvar'));
+    return {
+      Portal: ({
+        children,
+      }: any) => <>{children}</>,
 
-    await waitFor(() => {
-      expect(mockOnSubmit).toHaveBeenCalledWith({
-        name: 'novo nome',
-        login: 'novo login',
-        password: '123456',
-      });
+      Dialog,
+
+      Button,
+
+      TextInput,
+
+      HelperText: ({
+        children,
+      }: any) => (
+        <Text>{children}</Text>
+      ),
+    };
+  },
+);
+
+describe(
+  'ProfileForm',
+  () => {
+    const mockOnClose =
+      jest.fn();
+
+    const mockOnSubmit =
+      jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
     });
-  });
 
-  it('should call onClose when cancel is pressed', () => {
-    const { getByText } = render(
-      <ProfileForm
-        visible
-        loading={false}
-        onClose={mockOnClose}
-        onSubmit={mockOnSubmit}
-      />,
+    it(
+      'should render form when visible',
+      () => {
+        const {
+          getByText,
+        } = render(
+          <ProfileForm
+            visible
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        expect(
+          getByText(
+            'Atualizar perfil',
+          ),
+        ).toBeTruthy();
+
+        expect(
+          getByText('Cancelar'),
+        ).toBeTruthy();
+
+        expect(
+          getByText('Salvar'),
+        ).toBeTruthy();
+      },
     );
 
-    fireEvent.press(getByText('Cancelar'));
+    it(
+      'should not render when invisible',
+      () => {
+        const {
+          queryByText,
+        } = render(
+          <ProfileForm
+            visible={false}
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
 
-    expect(mockOnClose).toHaveBeenCalled();
-  });
-
-  it('should not render when not visible', () => {
-    const { queryByText } = render(
-      <ProfileForm
-        visible={false}
-        loading={false}
-        onClose={mockOnClose}
-        onSubmit={mockOnSubmit}
-      />,
+        expect(
+          queryByText(
+            'Atualizar perfil',
+          ),
+        ).toBeNull();
+      },
     );
 
-    expect(queryByText('Atualizar perfil')).toBeNull();
-  });
-});
+    it(
+      'should populate initial data',
+      async () => {
+        const {
+          getByTestId,
+        } = render(
+          <ProfileForm
+            visible
+            initialData={{
+              name: 'Weldon',
+              login: 'weldon',
+            }}
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        await waitFor(() => {
+          expect(
+            getByTestId(
+              'name-input',
+            ).props.value,
+          ).toBe('Weldon');
+
+          expect(
+            getByTestId(
+              'login-input',
+            ).props.value,
+          ).toBe('weldon');
+        });
+      },
+    );
+
+    it(
+      'should call onClose when cancel button is pressed',
+      () => {
+        const {
+          getByText,
+        } = render(
+          <ProfileForm
+            visible
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        fireEvent.press(
+          getByText('Cancelar'),
+        );
+
+        expect(
+          mockOnClose,
+        ).toHaveBeenCalledTimes(
+          1,
+        );
+      },
+    );
+
+    it(
+      'should submit form successfully',
+      async () => {
+        mockOnSubmit.mockResolvedValue(
+          undefined,
+        );
+
+        const {
+          getByTestId,
+          getByText,
+        } = render(
+          <ProfileForm
+            visible
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        fireEvent.changeText(
+          getByTestId(
+            'name-input',
+          ),
+          'Novo Nome',
+        );
+
+        fireEvent.changeText(
+          getByTestId(
+            'login-input',
+          ),
+          'novo.login',
+        );
+
+        fireEvent.changeText(
+          getByTestId(
+            'password-input',
+          ),
+          '123456',
+        );
+
+        fireEvent.press(
+          getByText('Salvar'),
+        );
+
+        await waitFor(() => {
+          expect(
+            mockOnSubmit,
+          ).toHaveBeenCalledWith({
+            name: 'Novo Nome',
+            login: 'novo.login',
+            password: '123456',
+          });
+        });
+
+        expect(
+          mockOnClose,
+        ).toHaveBeenCalled();
+      },
+    );
+
+    it(
+      'should submit form with initial data edited',
+      async () => {
+        mockOnSubmit.mockResolvedValue(
+          undefined,
+        );
+
+        const {
+          getByTestId,
+          getByText,
+        } = render(
+          <ProfileForm
+            visible
+            initialData={{
+              name: 'João',
+              login: 'joao',
+            }}
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        fireEvent.changeText(
+          getByTestId(
+            'name-input',
+          ),
+          'João Silva',
+        );
+
+        fireEvent.changeText(
+          getByTestId(
+            'login-input',
+          ),
+          'joao.silva',
+        );
+
+        fireEvent.changeText(
+          getByTestId(
+            'password-input',
+          ),
+          'novaSenha',
+        );
+
+        fireEvent.press(
+          getByText('Salvar'),
+        );
+
+        await waitFor(() => {
+          expect(
+            mockOnSubmit,
+          ).toHaveBeenCalledWith({
+            name: 'João Silva',
+            login: 'joao.silva',
+            password: 'novaSenha',
+          });
+        });
+      },
+    );
+
+    it(
+      'should render loading state',
+      () => {
+        const {
+          getByText,
+        } = render(
+          <ProfileForm
+            visible
+            loading
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        expect(
+          getByText('Salvar'),
+        ).toBeTruthy();
+
+        expect(
+          getByText('Cancelar'),
+        ).toBeTruthy();
+      },
+    );
+
+    it(
+      'should clear password when initialData changes',
+      async () => {
+        const {
+          getByTestId,
+          rerender,
+        } = render(
+          <ProfileForm
+            visible
+            initialData={{
+              name: 'User 1',
+              login: 'user1',
+            }}
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        fireEvent.changeText(
+          getByTestId(
+            'password-input',
+          ),
+          '123456',
+        );
+
+        rerender(
+          <ProfileForm
+            visible
+            initialData={{
+              name: 'User 2',
+              login: 'user2',
+            }}
+            onClose={mockOnClose}
+            onSubmit={mockOnSubmit}
+          />,
+        );
+
+        await waitFor(() => {
+          expect(
+            getByTestId(
+              'password-input',
+            ).props.value,
+          ).toBe('');
+        });
+      },
+    );
+  },
+);

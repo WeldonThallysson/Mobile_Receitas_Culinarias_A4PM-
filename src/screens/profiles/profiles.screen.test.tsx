@@ -6,180 +6,311 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import {
-  Pressable,
-  Text,
-  View,
-} from 'react-native';
-
 import ProfileScreen from './profiles.screen';
 
-const mockLoadUser = jest.fn();
+import { useAuth } from '../../hooks/useAuth';
+import { useUsers } from '../../hooks/useUsers';
 
-const mockHandleUpdateUser =
-  jest.fn();
+jest.mock('../../hooks/useAuth', () => ({
+  useAuth: jest.fn(),
+}));
 
-const mockUserId = 1;
+jest.mock('../../hooks/useUsers', () => ({
+  useUsers: jest.fn(),
+}));
 
 jest.mock(
-  '../../hooks/useAuth',
-  () => ({
-    useAuth: () => ({
-      userId: mockUserId,
-    }),
-  }),
+  '../../components/profile-form/profile.form',
+  () => {
+    const React = require('react');
+
+    const {
+      View,
+      Text,
+      TouchableOpacity,
+    } = require('react-native');
+
+    return {
+      ProfileForm: ({
+        visible,
+        onClose,
+        onSubmit,
+      }: any) => {
+        if (!visible) {
+          return null;
+        }
+
+        return (
+          <View testID="profile-form">
+            <Text>Profile Form</Text>
+
+            <TouchableOpacity
+              testID="submit-profile-form"
+              onPress={() =>
+                onSubmit({
+                  name: 'Novo Nome',
+                  login: 'novo.login',
+                  password: '123456',
+                })
+              }
+            >
+              <Text>Salvar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              testID="close-profile-form"
+              onPress={onClose}
+            >
+              <Text>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        );
+      },
+    };
+  },
 );
 
 jest.mock(
-  '../../hooks/useUsers',
-  () => ({
-    useUsers: () => ({
-      selectedUser: {
-        id: 1,
-        name: 'teste',
-        login: '09381036012',
-        createdAt:
-          '2026-05-28T03:06:55.000Z',
-        updatedAt:
-          '2026-05-29T14:02:21.000Z',
+  'react-native-paper',
+  () => {
+    const React = require('react');
+
+    const {
+      View,
+      Text,
+      TouchableOpacity,
+    } = require('react-native');
+
+    return {
+      Text,
+
+      Avatar: {
+        Icon: () => (
+          <View testID="avatar" />
+        ),
       },
 
-      loadUser: mockLoadUser,
-
-      handleUpdateUser:
-        mockHandleUpdateUser,
-
-      loading: false,
-    }),
-  }),
+      Button: ({
+        children,
+        onPress,
+      }: any) => (
+        <TouchableOpacity
+          onPress={onPress}
+        >
+          <Text>{children}</Text>
+        </TouchableOpacity>
+      ),
+    };
+  },
 );
 
-jest.mock('../../components/profile-form/profile.form', () => {
-  const React = require('react');
-  const { View, Pressable, Text } = require('react-native');
+const mockedUseAuth =
+  useAuth as jest.Mock;
 
-  const ProfileForm = ({ visible, onClose, onSubmit }: any) =>
-    visible
-      ? React.createElement(
-          View,
-          { testID: 'profile-form' },
-          React.createElement(
-            Pressable,
-            {
-              testID: 'submit-form',
-              onPress: () =>
-                onSubmit({
-                  name: 'novo nome',
-                  login: 'novo login',
-                  password: '123456',
-                }),
-            },
-            React.createElement(Text, null, 'Submit'),
-          ),
-          React.createElement(
-            Pressable,
-            { testID: 'close-form', onPress: onClose },
-            React.createElement(Text, null, 'Close'),
-          ),
-        )
-      : null;
+const mockedUseUsers =
+  useUsers as jest.Mock;
 
-  return {
-    __esModule: true,
-    ProfileForm,
-  };
-});
+const mockLoadUser = jest
+  .fn()
+  .mockResolvedValue(undefined);
+
+const mockHandleUpdateUser = jest
+  .fn()
+  .mockResolvedValue(undefined);
 
 describe('ProfileScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    mockedUseAuth.mockReturnValue({
+      userId: 1,
+    });
+
+    mockedUseUsers.mockReturnValue({
+      selectedUser: {
+        id: 1,
+        name: 'Weldon',
+        login: 'weldon',
+      },
+      loadUser: mockLoadUser,
+      handleUpdateUser:
+        mockHandleUpdateUser,
+      loading: false,
+    });
   });
 
-  it(
-    'should render profile data',
-    () => {
-      const { getByText } =
-        render(<ProfileScreen />);
+  it('should render screen correctly', () => {
+    const {
+      getByText,
+      getByTestId,
+    } = render(
+      <ProfileScreen />,
+    );
 
+    expect(
+      getByTestId('avatar'),
+    ).toBeTruthy();
+
+    expect(
+      getByText('Weldon'),
+    ).toBeTruthy();
+
+    expect(
+      getByText('weldon'),
+    ).toBeTruthy();
+
+    expect(
+      getByText(
+        'Atualizar Perfil',
+      ),
+    ).toBeTruthy();
+  });
+
+  it('should load user on mount', () => {
+    render(<ProfileScreen />);
+
+    expect(
+      mockLoadUser,
+    ).toHaveBeenCalledWith(1);
+  });
+
+  it('should open profile modal', () => {
+    const {
+      getByText,
+      getByTestId,
+    } = render(
+      <ProfileScreen />,
+    );
+
+    fireEvent.press(
+      getByText(
+        'Atualizar Perfil',
+      ),
+    );
+
+    expect(
+      getByTestId(
+        'profile-form',
+      ),
+    ).toBeTruthy();
+  });
+
+  it('should close profile modal', () => {
+    const {
+      getByText,
+      getByTestId,
+      queryByTestId,
+    } = render(
+      <ProfileScreen />,
+    );
+
+    fireEvent.press(
+      getByText(
+        'Atualizar Perfil',
+      ),
+    );
+
+    fireEvent.press(
+      getByTestId(
+        'close-profile-form',
+      ),
+    );
+
+    expect(
+      queryByTestId(
+        'profile-form',
+      ),
+    ).toBeNull();
+  });
+
+  it('should update user successfully', async () => {
+    const {
+      getByText,
+      getByTestId,
+    } = render(
+      <ProfileScreen />,
+    );
+
+    fireEvent.press(
+      getByText(
+        'Atualizar Perfil',
+      ),
+    );
+
+    fireEvent.press(
+      getByTestId(
+        'submit-profile-form',
+      ),
+    );
+
+    await waitFor(() => {
       expect(
-        getByText('Perfil'),
-      ).toBeTruthy();
-
-      expect(
-        getByText(
-          'Nome: teste',
-        ),
-      ).toBeTruthy();
-
-      expect(
-        getByText(
-          'Login: 09381036012',
-        ),
-      ).toBeTruthy();
-    },
-  );
-
-  it(
-    'should call loadUser on mount',
-    () => {
-      render(<ProfileScreen />);
-
-      expect(
-        mockLoadUser,
-      ).toHaveBeenCalledWith(1);
-    },
-  );
-
-  it(
-    'should open profile form',
-    () => {
-      const { getByTestId } =
-        render(<ProfileScreen />);
-
-      fireEvent.press(
-        getByTestId(
-          'open-profile-form',
-        ),
+        mockHandleUpdateUser,
+      ).toHaveBeenCalledWith(
+        1,
+        {
+          name: 'Novo Nome',
+          login: 'novo.login',
+          password: '123456',
+        },
       );
+    });
 
+    expect(
+      mockLoadUser,
+    ).toHaveBeenCalledTimes(2);
+  });
+
+  it('should not update user when userId is undefined', async () => {
+    mockedUseAuth.mockReturnValue({
+      userId: undefined,
+    });
+
+    const {
+      getByText,
+      getByTestId,
+    } = render(
+      <ProfileScreen />,
+    );
+
+    fireEvent.press(
+      getByText(
+        'Atualizar Perfil',
+      ),
+    );
+
+    fireEvent.press(
+      getByTestId(
+        'submit-profile-form',
+      ),
+    );
+
+    await waitFor(() => {
       expect(
-        getByTestId(
-          'profile-form',
-        ),
-      ).toBeTruthy();
-    },
-  );
+        mockHandleUpdateUser,
+      ).not.toHaveBeenCalled();
+    });
+  });
 
-  it(
-    'should submit update user',
-    async () => {
-      const { getByTestId } =
-        render(<ProfileScreen />);
+  it('should render empty user data', () => {
+    mockedUseUsers.mockReturnValue({
+      selectedUser: undefined,
+      loadUser: mockLoadUser,
+      handleUpdateUser:
+        mockHandleUpdateUser,
+      loading: false,
+    });
 
-      fireEvent.press(
-        getByTestId(
-          'open-profile-form',
-        ),
-      );
+    const {
+      getByText,
+    } = render(
+      <ProfileScreen />,
+    );
 
-      fireEvent.press(
-        getByTestId(
-          'submit-form',
-        ),
-      );
-
-      await waitFor(() => {
-        expect(
-          mockHandleUpdateUser,
-        ).toHaveBeenCalledWith(
-          1,
-          {
-            name: 'novo nome',
-            login: 'novo login',
-            password: '123456',
-          },
-        );
-      });
-    },
-  );
+    expect(
+      getByText(
+        'Atualizar Perfil',
+      ),
+    ).toBeTruthy();
+  });
 });

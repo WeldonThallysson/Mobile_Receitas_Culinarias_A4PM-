@@ -39,7 +39,6 @@ const { token } = route.params;
         data.newPassword,
     });
 
-    navigation.navigate('Login');
   };
 
   return (

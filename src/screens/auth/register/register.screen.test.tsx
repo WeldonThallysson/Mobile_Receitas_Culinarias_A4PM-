@@ -1,72 +1,196 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import React from 'react';
+
+import {
+  fireEvent,
+  render,
+  waitFor,
+} from '@testing-library/react-native';
 
 import RegisterScreen from './register.screen';
 
-const mockNavigate = jest.fn();
-const mockHandleRegister = jest.fn();
+import { useAuth } from '../../../hooks/useAuth';
+
+import { useNavigation } from '@react-navigation/native';
 
 jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => ({
-    navigate: mockNavigate,
-  }),
+  useNavigation: jest.fn(),
 }));
 
 jest.mock('../../../hooks/useAuth', () => ({
-  useAuth: () => ({
-    loading: false,
-    handleRegister: mockHandleRegister,
-  }),
+  useAuth: jest.fn(),
 }));
+
+const mockHandleRegister = jest.fn();
+
+const mockNavigate = jest.fn();
 
 describe('RegisterScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
 
-  it('should render register screen', () => {
-    const { getByText } = render(<RegisterScreen />);
+    (useAuth as jest.Mock).mockReturnValue({
+      handleRegister: mockHandleRegister,
+      loading: false,
+    });
 
-    expect(getByText('Cadastro')).toBeTruthy();
-    expect(getByText('Cadastrar')).toBeTruthy();
-  });
-
-  it('should update form fields', () => {
-    const { getByTestId } = render(<RegisterScreen />);
-
-    fireEvent.changeText(getByTestId('name-input'), 'John Doe');
-    fireEvent.changeText(getByTestId('login-input'), 'john');
-    fireEvent.changeText(getByTestId('password-input'), '123456');
-
-    expect(getByTestId('name-input').props.value).toBe('John Doe');
-    expect(getByTestId('login-input').props.value).toBe('john');
-    expect(getByTestId('password-input').props.value).toBe('123456');
-  });
-
-  it('should submit register form successfully', async () => {
-    const { getByTestId, getByText } = render(<RegisterScreen />);
-
-    fireEvent.changeText(getByTestId('name-input'), 'John Doe');
-    fireEvent.changeText(getByTestId('login-input'), 'john');
-    fireEvent.changeText(getByTestId('password-input'), '123456');
-
-    fireEvent.press(getByText('Cadastrar'));
-
-    await waitFor(() => {
-      expect(mockHandleRegister).toHaveBeenCalledWith({
-        name: 'John Doe',
-        login: 'john',
-        password: '123456',
-      });
+    (useNavigation as jest.Mock).mockReturnValue({
+      navigate: mockNavigate,
     });
   });
 
-  it('should navigate to login screen', () => {
-    const { getByText } = render(<RegisterScreen />);
-
-    fireEvent.press(
-      getByText('Você possui uma conta? Realize o login'),
+  it('should render screen correctly', () => {
+    const { getByText, getByTestId } = render(
+      <RegisterScreen />,
     );
 
-    expect(mockNavigate).toHaveBeenCalledWith('Login');
+    expect(getByText('Cadastro')).toBeTruthy();
+
+    expect(
+      getByTestId('name-input'),
+    ).toBeTruthy();
+
+    expect(
+      getByTestId('login-input'),
+    ).toBeTruthy();
+
+    expect(
+      getByTestId('password-input'),
+    ).toBeTruthy();
+
+    expect(
+      getByText('Cadastrar'),
+    ).toBeTruthy();
+  });
+
+  it('should update form fields correctly', () => {
+    const { getByTestId } = render(
+      <RegisterScreen />,
+    );
+
+    const nameInput =
+      getByTestId('name-input');
+
+    const loginInput =
+      getByTestId('login-input');
+
+    const passwordInput =
+      getByTestId('password-input');
+
+    fireEvent.changeText(
+      nameInput,
+      'Weldon',
+    );
+
+    fireEvent.changeText(
+      loginInput,
+      'admin',
+    );
+
+    fireEvent.changeText(
+      passwordInput,
+      '123456',
+    );
+
+    expect(nameInput.props.value).toBe(
+      'Weldon',
+    );
+
+    expect(loginInput.props.value).toBe(
+      'admin',
+    );
+
+    expect(passwordInput.props.value).toBe(
+      '123456',
+    );
+  });
+
+  it('should submit form successfully', async () => {
+    const { getByTestId, getByText } = render(
+      <RegisterScreen />,
+    );
+
+    fireEvent.changeText(
+      getByTestId('name-input'),
+      'Weldon',
+    );
+
+    fireEvent.changeText(
+      getByTestId('login-input'),
+      'admin',
+    );
+
+    fireEvent.changeText(
+      getByTestId('password-input'),
+      '123456',
+    );
+
+    fireEvent.press(
+      getByText('Cadastrar'),
+    );
+
+    await waitFor(() => {
+      expect(
+        mockHandleRegister,
+      ).toHaveBeenCalledWith({
+        name: 'Weldon',
+        login: 'admin',
+        password: '123456',
+      });
+    });
+
+    expect(
+      mockHandleRegister,
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  it('should navigate to login screen', () => {
+    const { getByText } = render(
+      <RegisterScreen />,
+    );
+
+    fireEvent.press(
+      getByText(
+        'Você possui uma conta? Realize o login',
+      ),
+    );
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      'Login',
+    );
+  });
+
+  it('should render loading state', () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      handleRegister: mockHandleRegister,
+      loading: true,
+    });
+
+    const { getByText } = render(
+      <RegisterScreen />,
+    );
+
+    expect(
+      getByText('Cadastrar'),
+    ).toBeTruthy();
+  });
+
+  it('should submit empty fields because no validation exists', async () => {
+    const { getByText } = render(
+      <RegisterScreen />,
+    );
+
+    fireEvent.press(
+      getByText('Cadastrar'),
+    );
+
+    await waitFor(() => {
+      expect(
+        mockHandleRegister,
+      ).toHaveBeenCalledWith({
+        name: '',
+        login: '',
+        password: '',
+      });
+    });
   });
 });

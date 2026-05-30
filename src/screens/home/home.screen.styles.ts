@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { theme } from '../../global/theme';
 
 export const styles = StyleSheet.create({
   container: {
@@ -9,12 +10,12 @@ export const styles = StyleSheet.create({
 
   contentContainer: {
     padding: 15,
-    paddingTop: 30,
-    paddingBottom: 32,
+    paddingTop: 25,
+    paddingBottom: 25,
   },
 
   hero: {
-    marginBottom: 24,
+    marginBottom: 15,
   },
 
   heroTitle: {
@@ -41,7 +42,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#F3E5F5',
+    backgroundColor: '#edecf3',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 999,
@@ -51,7 +52,7 @@ export const styles = StyleSheet.create({
   badgeText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6A1B9A',
+    color: theme.colors?.primary,
   },
 
   cardHeader: {
@@ -102,8 +103,15 @@ export const styles = StyleSheet.create({
     gap: 8,
   },
 
+  actions_edit: {
+     backgroundColor: '#edecf3',
+  },
   createButton: {
-    marginTop: 24,
+    marginTop: 10,
+    marginBottom: 10,
+    
+    marginLeft: 12,
+    marginRight: 12,
     borderRadius: 16,
   },
 

@@ -9,6 +9,10 @@ import LoginScreen from './login.screen';
 const mockNavigate = jest.fn();
 const mockHandleLogin = jest.fn();
 
+jest.mock(
+  'react-native-vector-icons/MaterialIcons',
+  () => 'Icon',
+);
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: mockNavigate,
@@ -27,8 +31,22 @@ describe('LoginScreen', () => {
     jest.clearAllMocks();
   });
 
-  it('should render login screen', () => {
-    const { getByText } = render(<LoginScreen />);
+  it('should render login screen correctly', () => {
+    const { getByText, getByTestId } = render(
+      <LoginScreen />,
+    );
+
+    expect(
+      getByText('Receitas Culinárias'),
+    ).toBeTruthy();
+
+    expect(
+      getByTestId('login-input'),
+    ).toBeTruthy();
+
+    expect(
+      getByTestId('password-input'),
+    ).toBeTruthy();
 
     expect(getByText('Entrar')).toBeTruthy();
   });
@@ -39,16 +57,32 @@ describe('LoginScreen', () => {
     fireEvent.press(getByText('Entrar'));
 
     await waitFor(() => {
-      expect(getByText('Informe o login')).toBeTruthy();
-      expect(getByText('Informe a senha')).toBeTruthy();
+      expect(
+        getByText('Informe o login'),
+      ).toBeTruthy();
+
+      expect(
+        getByText('Informe a senha'),
+      ).toBeTruthy();
     });
+
+    expect(mockHandleLogin).not.toHaveBeenCalled();
   });
 
   it('should submit login form successfully', async () => {
-    const { getByTestId, getByText } = render(<LoginScreen />);
+    const { getByTestId, getByText } = render(
+      <LoginScreen />,
+    );
 
-    fireEvent.changeText(getByTestId('login-input'), 'admin');
-    fireEvent.changeText(getByTestId('password-input'), '123456');
+    fireEvent.changeText(
+      getByTestId('login-input'),
+      'admin',
+    );
+
+    fireEvent.changeText(
+      getByTestId('password-input'),
+      '123456',
+    );
 
     fireEvent.press(getByText('Entrar'));
 
@@ -58,23 +92,48 @@ describe('LoginScreen', () => {
         password: '123456',
       });
     });
+
+    expect(mockHandleLogin).toHaveBeenCalledTimes(1);
   });
 
   it('should navigate to register screen', () => {
     const { getByText } = render(<LoginScreen />);
 
     fireEvent.press(
-      getByText('Ainda não possui uma conta? crie agora!'),
+      getByText(
+        'Ainda não possui uma conta? crie agora!',
+      ),
     );
 
-    expect(mockNavigate).toHaveBeenCalledWith('Register');
+    expect(mockNavigate).toHaveBeenCalledWith(
+      'Register',
+    );
   });
 
   it('should navigate to recover password screen', () => {
     const { getByText } = render(<LoginScreen />);
 
-    fireEvent.press(getByText('Recuperar senha'));
+    fireEvent.press(
+      getByText('Recuperar senha'),
+    );
 
-    expect(mockNavigate).toHaveBeenCalledWith('RecoverPassword');
+    expect(mockNavigate).toHaveBeenCalledWith(
+      'RecoverPassword',
+    );
+  });
+
+  it('should show loading state', () => {
+    jest.doMock('../../../hooks/useAuth', () => ({
+      useAuth: () => ({
+        loading: true,
+        handleLogin: mockHandleLogin,
+      }),
+    }));
+
+    const { getByText } = render(
+      <LoginScreen />,
+    );
+
+    expect(getByText('Entrar')).toBeTruthy();
   });
 });
