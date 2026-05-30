@@ -11,7 +11,9 @@ import { Routes } from './src/routes/routes';
 import Toast from 'react-native-toast-message';
 
 import { theme } from './src/global/theme';
+import { LogBox } from 'react-native';
 
+LogBox.ignoreAllLogs(true)
 export const App = () => {
   const isDarkMode =
     useColorScheme() === 'dark';
