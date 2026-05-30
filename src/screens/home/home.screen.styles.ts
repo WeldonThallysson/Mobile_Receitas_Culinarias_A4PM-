@@ -21,6 +21,7 @@ export const styles = StyleSheet.create({
   heroTitle: {
     fontWeight: '700',
     marginBottom: 8,
+    fontSize: 22
   },
 
   heroSubtitle: {

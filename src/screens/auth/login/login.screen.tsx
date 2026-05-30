@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
 
 import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 
@@ -47,8 +47,13 @@ const LoginScreen = () => {
 
         <Text style={styles.subtitle}>Organize suas receitas favoritas</Text>
       </View>
-
-      <Controller
+       <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{
+            gap: 10
+          }}
+        >
+    <Controller
         control={control}
         name="login"
         render={({ field: { value, onChange } }) => (
@@ -90,6 +95,9 @@ const LoginScreen = () => {
           </>
         )}
       />
+
+        </KeyboardAvoidingView>
+  
 
       <Button
         mode="contained"

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
 import {
   Button,
@@ -77,8 +77,9 @@ export const RecipesForm = ({
 
     if (recipe) {
       reset({
-        category_id: String(recipe.category_id),
-
+         category_id: recipe?.category?.id
+        ? String(recipe?.category?.id)
+        : '',
         name: recipe.name,
 
         preparationTimeMinutes: String(recipe.preparationTimeMinutes),
@@ -114,7 +115,7 @@ export const RecipesForm = ({
 
   const handleFormSubmit = async (data: RecipeFormData) => {
     await onSubmit({
-      category_id: Number(data.category_id),
+      category_id: Number(data?.category_id),
 
       name: data.name,
 
@@ -132,11 +133,7 @@ export const RecipesForm = ({
     onClose();
   };
 
-  useEffect(() => {
-    if (recipe && categories.length > 0) {
-      setValue('category_id', String(recipe.category_id));
-    }
-  }, [recipe, categories]);
+ 
   return (
     <Portal>
       <Dialog
@@ -144,173 +141,177 @@ export const RecipesForm = ({
         onDismiss={loading ? undefined : handleClose}
         style={styles.dialog}
       >
-        <Dialog.Title>
-          {recipe ? 'Editar receita' : 'Nova receita'}
-        </Dialog.Title>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <Dialog.Title>
+            {recipe ? 'Editar receita' : 'Nova receita'}
+          </Dialog.Title>
 
-        <Dialog.ScrollArea>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            <View style={styles.content}>
-              <Controller
-                control={control}
-                name="category_id"
-                render={({ field: { value, onChange } }) => {
-                  return (
-                    <Dropdown
-                      label="Categoria"
-                      value={value}
-                      onSelect={onChange}
-                      options={categories.map(category => ({
-                        label: category.name,
-                        value: String(category.id),
-                      }))}
-                    />
-                  );
-                }}
-              />
-              <Controller
-                control={control}
-                name="name"
-                render={({ field: { value, onChange } }) => (
-                  <>
-                    <TextInput
-                      mode="outlined"
-                      label="Nome da receita"
-                      value={value}
-                      disabled={loading}
-                      onChangeText={onChange}
-                    />
-                    {errors?.name?.message && (
-                      <HelperText type="error" visible={!!errors.name}>
-                        {errors.name?.message}
-                      </HelperText>
-                    )}
-                  </>
-                )}
-              />
-
-              <View style={styles.row}>
+          <Dialog.ScrollArea>
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.content}>
                 <Controller
                   control={control}
-                  name="preparationTimeMinutes"
+                  name="category_id"
+                  render={({ field: { value, onChange } }) => {
+                    return (
+                      <Dropdown
+                        label="Categoria"
+                        value={value}
+                        onSelect={onChange}
+                        options={categories.map(category => ({
+                          label: category.name,
+                          value: String(category.id),
+                        }))}
+                      />
+                    );
+                  }}
+                />
+                <Controller
+                  control={control}
+                  name="name"
                   render={({ field: { value, onChange } }) => (
-                    <View style={styles.flex}>
+                    <>
                       <TextInput
                         mode="outlined"
-                        label="Tempo (min)"
-                        keyboardType="numeric"
+                        label="Nome da receita"
+                        value={value}
+                        disabled={loading}
+                        onChangeText={onChange}
+                      />
+                      {errors?.name?.message && (
+                        <HelperText type="error" visible={!!errors.name}>
+                          {errors.name?.message}
+                        </HelperText>
+                      )}
+                    </>
+                  )}
+                />
+
+                <View style={styles.row}>
+                  <Controller
+                    control={control}
+                    name="preparationTimeMinutes"
+                    render={({ field: { value, onChange } }) => (
+                      <View style={styles.flex}>
+                        <TextInput
+                          mode="outlined"
+                          label="Tempo (min)"
+                          keyboardType="numeric"
+                          value={value}
+                          disabled={loading}
+                          onChangeText={onChange}
+                        />
+
+                        {errors?.preparationTimeMinutes?.message && (
+                          <HelperText
+                            type="error"
+                            visible={!!errors.preparationTimeMinutes}
+                          >
+                            {errors.preparationTimeMinutes?.message}
+                          </HelperText>
+                        )}
+                      </View>
+                    )}
+                  />
+
+                  <Controller
+                    control={control}
+                    name="servings"
+                    render={({ field: { value, onChange } }) => (
+                      <View style={styles.flex}>
+                        <TextInput
+                          mode="outlined"
+                          label="Porções"
+                          keyboardType="numeric"
+                          value={value}
+                          disabled={loading}
+                          onChangeText={onChange}
+                        />
+
+                        {errors?.servings?.message && (
+                          <HelperText type="error" visible={!!errors.servings}>
+                            {errors.servings?.message}
+                          </HelperText>
+                        )}
+                      </View>
+                    )}
+                  />
+                </View>
+
+                <Controller
+                  control={control}
+                  name="ingredients"
+                  render={({ field: { value, onChange } }) => (
+                    <>
+                      <TextInput
+                        mode="outlined"
+                        label="Ingredientes"
+                        multiline
+                        numberOfLines={5}
                         value={value}
                         disabled={loading}
                         onChangeText={onChange}
                       />
 
-                      {errors?.preparationTimeMinutes?.message && (
-                        <HelperText
-                          type="error"
-                          visible={!!errors.preparationTimeMinutes}
-                        >
-                          {errors.preparationTimeMinutes?.message}
+                      {errors?.ingredients?.message && (
+                        <HelperText type="error" visible={!!errors.ingredients}>
+                          {errors.ingredients?.message}
                         </HelperText>
                       )}
-                    </View>
+                    </>
                   )}
                 />
 
                 <Controller
                   control={control}
-                  name="servings"
+                  name="preparationMethod"
                   render={({ field: { value, onChange } }) => (
-                    <View style={styles.flex}>
+                    <>
                       <TextInput
                         mode="outlined"
-                        label="Porções"
-                        keyboardType="numeric"
+                        label="Modo de preparo"
+                        multiline
+                        numberOfLines={7}
                         value={value}
                         disabled={loading}
                         onChangeText={onChange}
                       />
 
-                      {errors?.servings?.message && (
-                        <HelperText type="error" visible={!!errors.servings}>
-                          {errors.servings?.message}
+                      {errors?.preparationMethod?.message && (
+                        <HelperText
+                          type="error"
+                          visible={!!errors.preparationMethod}
+                        >
+                          {errors.preparationMethod?.message}
                         </HelperText>
                       )}
-                    </View>
+                    </>
                   )}
                 />
               </View>
+            </ScrollView>
+          </Dialog.ScrollArea>
 
-              <Controller
-                control={control}
-                name="ingredients"
-                render={({ field: { value, onChange } }) => (
-                  <>
-                    <TextInput
-                      mode="outlined"
-                      label="Ingredientes"
-                      multiline
-                      numberOfLines={5}
-                      value={value}
-                      disabled={loading}
-                      onChangeText={onChange}
-                    />
+          <Dialog.Actions>
+            <Button disabled={loading} onPress={handleClose}>
+              Cancelar
+            </Button>
 
-                    {errors?.ingredients?.message && (
-                      <HelperText type="error" visible={!!errors.ingredients}>
-                        {errors.ingredients?.message}
-                      </HelperText>
-                    )}
-                  </>
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="preparationMethod"
-                render={({ field: { value, onChange } }) => (
-                  <>
-                    <TextInput
-                      mode="outlined"
-                      label="Modo de preparo"
-                      multiline
-                      numberOfLines={7}
-                      value={value}
-                      disabled={loading}
-                      onChangeText={onChange}
-                    />
-
-                    {errors?.preparationMethod?.message && (
-                      <HelperText
-                        type="error"
-                        visible={!!errors.preparationMethod}
-                      >
-                        {errors.preparationMethod?.message}
-                      </HelperText>
-                    )}
-                  </>
-                )}
-              />
-            </View>
-          </ScrollView>
-        </Dialog.ScrollArea>
-
-        <Dialog.Actions>
-          <Button disabled={loading} onPress={handleClose}>
-            Cancelar
-          </Button>
-
-          <Button
-            mode="contained"
-            loading={loading}
-            disabled={loading}
-            onPress={handleSubmit(handleFormSubmit)}
-          >
-            {recipe ? 'Salvar' : 'Cadastrar'}
-          </Button>
-        </Dialog.Actions>
+            <Button
+              mode="contained"
+              loading={loading}
+              disabled={loading}
+              onPress={handleSubmit(handleFormSubmit)}
+            >
+              {recipe ? 'Salvar' : 'Cadastrar'}
+            </Button>
+          </Dialog.Actions>
+        </KeyboardAvoidingView>
       </Dialog>
     </Portal>
   );

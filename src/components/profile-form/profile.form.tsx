@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
 import {
   Button,
@@ -80,78 +80,81 @@ export const ProfileForm = ({
     <Portal>
       <Dialog visible={visible} onDismiss={loading ? undefined : handleClose}>
         <Dialog.Title>Atualizar perfil</Dialog.Title>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <Dialog.ScrollArea>
+            <ScrollView keyboardShouldPersistTaps="handled">
+              <View style={styles.content}>
+                <Controller
+                  control={control}
+                  name="name"
+                  render={({ field: { value, onChange } }) => (
+                    <>
+                      <TextInput
+                        testID="name-input"
+                        label="Nome"
+                        value={value}
+                        onChangeText={onChange}
+                        disabled={loading}
+                      />
+                      {errors?.name?.message && (
+                        <HelperText type="error" visible={!!errors.name}>
+                          {errors.name?.message}
+                        </HelperText>
+                      )}
+                    </>
+                  )}
+                />
 
-        <Dialog.ScrollArea>
-          <ScrollView keyboardShouldPersistTaps="handled">
-            <View style={styles.content}>
-              <Controller
-                control={control}
-                name="name"
-                render={({ field: { value, onChange } }) => (
-                  <>
-                    <TextInput
-                      testID="name-input"
-                      label="Nome"
-                      value={value}
-                      onChangeText={onChange}
-                      disabled={loading}
-                    />
-                    {errors?.name?.message && (
-                      <HelperText type="error" visible={!!errors.name}>
-                        {errors.name?.message}
-                      </HelperText>
-                    )}
-                  </>
-                )}
-              />
+                <Controller
+                  control={control}
+                  name="login"
+                  render={({ field: { value, onChange } }) => (
+                    <>
+                      <TextInput
+                        testID="login-input"
+                        label="Login"
+                        value={value}
+                        onChangeText={onChange}
+                        disabled={loading}
+                      />
 
-              <Controller
-                control={control}
-                name="login"
-                render={({ field: { value, onChange } }) => (
-                  <>
-                    <TextInput
-                      testID="login-input"
-                      label="Login"
-                      value={value}
-                      onChangeText={onChange}
-                      disabled={loading}
-                    />
+                      {errors?.login?.message && (
+                        <HelperText type="error" visible={!!errors.login}>
+                          {errors.login?.message}
+                        </HelperText>
+                      )}
+                    </>
+                  )}
+                />
 
-                    {errors?.login?.message && (
-                      <HelperText type="error" visible={!!errors.login}>
-                        {errors.login?.message}
-                      </HelperText>
-                    )}
-                  </>
-                )}
-              />
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({ field: { value, onChange } }) => (
+                    <>
+                      <TextInput
+                        testID="password-input"
+                        label="Senha"
+                        secureTextEntry
+                        value={value}
+                        onChangeText={onChange}
+                        disabled={loading}
+                      />
 
-              <Controller
-                control={control}
-                name="password"
-                render={({ field: { value, onChange } }) => (
-                  <>
-                    <TextInput
-                      testID="password-input"
-                      label="Senha"
-                      secureTextEntry
-                      value={value}
-                      onChangeText={onChange}
-                      disabled={loading}
-                    />
-
-                    {errors.password?.message && (
-                      <HelperText type="error" visible={!!errors.password}>
-                        {errors.password?.message}
-                      </HelperText>
-                    )}
-                  </>
-                )}
-              />
-            </View>
-          </ScrollView>
-        </Dialog.ScrollArea>
+                      {errors.password?.message && (
+                        <HelperText type="error" visible={!!errors.password}>
+                          {errors.password?.message}
+                        </HelperText>
+                      )}
+                    </>
+                  )}
+                />
+              </View>
+            </ScrollView>
+          </Dialog.ScrollArea>
+        </KeyboardAvoidingView>
 
         <Dialog.Actions>
           <Button disabled={loading} onPress={handleClose}>

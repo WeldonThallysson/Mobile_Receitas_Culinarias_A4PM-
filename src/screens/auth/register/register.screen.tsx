@@ -1,4 +1,4 @@
-import { View, Pressable } from 'react-native';
+import { View, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { Button, Text, TextInput } from 'react-native-paper';
 
@@ -34,49 +34,55 @@ const RegisterScreen = () => {
   return (
     <View style={styles.container}>
       <Text variant="headlineMedium">Cadastro</Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{
+          gap: 10,
+        }}
+      >
+        <Controller
+          control={control}
+          name="name"
+          render={({ field: { value, onChange } }) => (
+            <TextInput
+              testID="name-input"
+              mode="outlined"
+              label="Nome"
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
 
-      <Controller
-        control={control}
-        name="name"
-        render={({ field: { value, onChange } }) => (
-          <TextInput
-            testID="name-input"
-            mode="outlined"
-            label="Nome"
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
+        <Controller
+          control={control}
+          name="login"
+          render={({ field: { value, onChange } }) => (
+            <TextInput
+              testID="login-input"
+              mode="outlined"
+              label="Login"
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
 
-      <Controller
-        control={control}
-        name="login"
-        render={({ field: { value, onChange } }) => (
-          <TextInput
-            testID="login-input"
-            mode="outlined"
-            label="Login"
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="password"
-        render={({ field: { value, onChange } }) => (
-          <TextInput
-            testID="password-input"
-            mode="outlined"
-            label="Senha"
-            secureTextEntry
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { value, onChange } }) => (
+            <TextInput
+              testID="password-input"
+              mode="outlined"
+              label="Senha"
+              secureTextEntry
+              value={value}
+              onChangeText={onChange}
+            />
+          )}
+        />
+      </KeyboardAvoidingView>
 
       <Button
         mode="contained"
@@ -86,11 +92,8 @@ const RegisterScreen = () => {
         Cadastrar
       </Button>
 
-      <Button
-        mode="text" onPress={() => navigation.navigate('Login')}>
-        <Text variant="bodyMedium">
-          Você possui uma conta? Realize o login
-        </Text>
+      <Button mode="text" onPress={() => navigation.navigate('Login')}>
+        <Text variant="bodyMedium">Você possui uma conta? Realize o login</Text>
       </Button>
     </View>
   );

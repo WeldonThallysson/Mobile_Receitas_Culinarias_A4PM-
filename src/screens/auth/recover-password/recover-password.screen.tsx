@@ -1,4 +1,4 @@
-import { Pressable, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, View } from 'react-native';
 
 import { Button, HelperText, Text, TextInput } from 'react-native-paper';
 
@@ -43,28 +43,34 @@ const RecoverPassword = () => {
   return (
     <View style={styles.container}>
       <Text variant="headlineMedium">Recuperar senha</Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{
+          gap: 10,
+        }}
+      >
+        <Controller
+          control={control}
+          name="login"
+          render={({ field: { value, onChange } }) => (
+            <>
+              <TextInput
+                mode="outlined"
+                label="Login"
+                value={value}
+                onChangeText={onChange}
+                testID="login-input"
+              />
 
-      <Controller
-        control={control}
-        name="login"
-        render={({ field: { value, onChange } }) => (
-          <>
-            <TextInput
-              mode="outlined"
-              label="Login"
-              value={value}
-              onChangeText={onChange}
-              testID="login-input"
-            />
-
-            {errors.login?.message && (
-              <HelperText type="error" visible={!!errors.login}>
-                {errors.login?.message}
-              </HelperText>
-            )}
-          </>
-        )}
-      />
+              {errors.login?.message && (
+                <HelperText type="error" visible={!!errors.login}>
+                  {errors.login?.message}
+                </HelperText>
+              )}
+            </>
+          )}
+        />
+      </KeyboardAvoidingView>
 
       <Button
         mode="contained"
