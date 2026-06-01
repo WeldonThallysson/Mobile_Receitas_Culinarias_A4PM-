@@ -75,6 +75,7 @@ const ProfileScreen = () => {
  
 
       <Button
+        testID="update-profile-button"
         mode="contained"
         icon="account-edit"
         style={styles.button}

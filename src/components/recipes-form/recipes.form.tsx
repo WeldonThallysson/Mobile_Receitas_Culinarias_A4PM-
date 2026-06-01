@@ -7,11 +7,10 @@ import {
   Dialog,
   HelperText,
   Portal,
-  Text,
   TextInput,
 } from 'react-native-paper';
 
-import { Dropdown } from 'react-native-paper-dropdown';
+import { Picker } from '@react-native-picker/picker';
 
 import { Controller, useForm } from 'react-hook-form';
 
@@ -163,15 +162,24 @@ export const RecipesForm = ({
                   name="category_id"
                   render={({ field: { value, onChange } }) => {
                     return (
-                      <Dropdown
-                        label="Categoria"
-                        value={value}
-                        onSelect={onChange}
-                        options={categories.map(category => ({
-                          label: category.name,
-                          value: String(category.id),
-                        }))}
-                      />
+                      <View style={{ backgroundColor: 'white', borderRadius: 4, overflow: 'hidden' }}>
+                        <Picker
+                          testID="recipe-category-picker"
+                          selectedValue={value}
+                          onValueChange={(itemValue) => onChange(itemValue)}
+                          style={{ height: 50 }}
+                          enabled={!loading}
+                        >
+                          <Picker.Item label="Selecione uma categoria" value="" />
+                          {categories?.map(category => (
+                            <Picker.Item
+                              key={category.id}
+                              label={category.name}
+                              value={String(category.id)}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
                     );
                   }}
                 />
@@ -181,6 +189,7 @@ export const RecipesForm = ({
                   render={({ field: { value, onChange } }) => (
                     <>
                       <TextInput
+                        testID="recipe-name-input"
                         mode="outlined"
                         label="Nome da receita"
                         value={value}
@@ -204,6 +213,7 @@ export const RecipesForm = ({
                       <View style={{ ...styles.flex, flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
                         <View style={{ flex: 1 }}>
                           <TextInput
+                            testID="recipe-time-input"
                             mode="outlined"
                             label="Tempo (min)"
                             keyboardType="numeric"
@@ -231,6 +241,7 @@ export const RecipesForm = ({
                     render={({ field: { value, onChange } }) => (
                       <View style={styles.flex}>
                         <TextInput
+                          testID="recipe-servings-input"
                           mode="outlined"
                           label="Porções"
                           keyboardType="numeric"
@@ -255,6 +266,7 @@ export const RecipesForm = ({
                   render={({ field: { value, onChange } }) => (
                     <>
                       <TextInput
+                        testID="recipe-ingredients-input"
                         mode="outlined"
                         label="Ingredientes"
                         multiline
@@ -279,6 +291,7 @@ export const RecipesForm = ({
                   render={({ field: { value, onChange } }) => (
                     <>
                       <TextInput
+                        testID="recipe-preparation-input"
                         mode="outlined"
                         label="Modo de preparo"
                         multiline

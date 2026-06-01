@@ -2,7 +2,7 @@
 
 Um aplicativo React Native para compartilhar e gerenciar receitas culinárias. Permite que usuários façam login, criem receitas, visualizem suas receitas e gerenciem seu perfil.
 
-## 📱 Telas da Aplicação
+## Telas da Aplicação
 
 ### Autenticação
 - **Login**: Tela de entrada com e-mail e senha
@@ -19,7 +19,7 @@ Um aplicativo React Native para compartilhar e gerenciar receitas culinárias. P
   - Nome, e-mail, telefone e outros dados
   - Botão de logout
 
-## 🚀 Como Iniciar
+## Como Iniciar
 
 ### Pré-requisitos
 - Node.js >= 22.11.0
@@ -28,7 +28,7 @@ Um aplicativo React Native para compartilhar e gerenciar receitas culinárias. P
 - Xcode (para rodar no iOS - macOS apenas)
 - JDK 17+ (para build Android)
 
-### 1️⃣ Instalar Dependências
+### Instalar Dependências
 
 ```bash
 npm install
@@ -36,7 +36,7 @@ npm install
 yarn install
 ```
 
-### 2️⃣ Iniciar Metro (em um terminal)
+### Iniciar Metro
 
 ```bash
 npm start
@@ -44,7 +44,7 @@ npm start
 yarn start
 ```
 
-### 3️⃣ Rodar o App Localmente
+### Rodar o App Localmente
 
 #### Android
 ```bash
@@ -67,7 +67,7 @@ npm run ios
 yarn ios
 ```
 
-## 📦 Gerar APK para Release (Android)
+## Gerar APK para Release (Android)
 
 ### Build Release APK
 ```bash
@@ -91,7 +91,7 @@ O bundle gerado estará em:
 android/app/build/outputs/bundle/release/app-release.aab
 ```
 
-## 🔧 Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **React Native** 0.85.3
 - **React Navigation** - Navegação entre telas
@@ -103,7 +103,7 @@ android/app/build/outputs/bundle/release/app-release.aab
 - **AsyncStorage** - Persistência local
 - **TypeScript** - Tipagem estática
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 src/
@@ -124,7 +124,7 @@ src/
 └── utils/         # Utilitários e formatadores
 ```
 
-## 🧪 Testes
+## Testes
 
 Executar testes unitários:
 ```bash
@@ -133,7 +133,48 @@ npm run test
 yarn test
 ```
 
-## ⚙️ Configuração de Ambiente
+## Testes E2E com Maestro
+
+### Instalação do Maestro
+
+Primeiro, instale o Maestro seguindo a documentação oficial:
+- [Maestro - Mobile UI Testing](https://maestro.mobile.dev/)
+
+No macOS:
+```bash
+brew install maestroqa/maestro/maestro
+```
+
+No Linux/Windows, siga as instruções no site oficial acima.
+
+### Executar Testes E2E
+
+1. **Inicie o emulador Android** (ou tenha o dispositivo físico conectado):
+```bash
+npm run android
+# ou
+yarn android
+```
+
+Aguarde até que o app esteja completamente carregado.
+
+2. **Execute o fluxo de testes E2E**:
+```bash
+maestro test maestro/default-recipe-flow.yaml
+```
+
+O Maestro irá executar o fluxo completo que inclui:
+- Login com credenciais de teste
+- Criar primeira receita (Lasanha)
+- Editar receita criada
+- Criar segunda receita (Bolo)
+- Buscar receita
+- Deletar receita
+- Atualizar perfil do usuário
+
+O fluxo é automaticamente simulado em tempo real no emulador/dispositivo.
+
+## Configuração de Ambiente
 
 Certifique-se de que as variáveis de ambiente estão configuradas no arquivo `.env` ou no `react-native-config`:
 
@@ -141,7 +182,7 @@ Certifique-se de que as variáveis de ambiente estão configuradas no arquivo `.
 API_URL=http://seu-backend-url
 ```
 
-## 🔄 Recarregar a Aplicação
+## Recarregar a Aplicação
 
 Durante desenvolvimento com Fast Refresh:
 - **Android**: Pressione <kbd>R</kbd> duas vezes ou acesse o Dev Menu com <kbd>Ctrl</kbd> + <kbd>M</kbd>
@@ -149,13 +190,13 @@ Durante desenvolvimento com Fast Refresh:
 
 Para recarregar completo, abanar o dispositivo e selecione "Reload".
 
-## 📝 Notas Importantes
+## Notas Importantes
 
 - Token de autenticação é armazenado localmente via AsyncStorage
 - O logout limpa o token e retorna para as telas de autenticação
 - Formatador de tempo: ao digitar minutos no formulário, é exibido como "7min" mas o valor armazenado é apenas "7"
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **Problema**: Metro não inicia
 - Solução: Kill todos os processos node e tente novamente
@@ -175,7 +216,7 @@ cd android
 ./gradlew assembleRelease
 ```
 
-## 📚 Recursos Adicionais
+## Recursos Adicionais
 
 - [React Native Documentation](https://reactnative.dev)
 - [React Navigation](https://reactnavigation.org)

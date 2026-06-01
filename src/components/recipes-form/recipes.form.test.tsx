@@ -57,8 +57,6 @@ jest.mock('react-native-paper', () => {
 
     Dialog: DialogComponent,
 
-    Text,
-
     HelperText: ({
       children,
     }: any) => <Text>{children}</Text>,
@@ -90,35 +88,37 @@ jest.mock('react-native-paper', () => {
   };
 });
 
-jest.mock(
-  'react-native-paper-dropdown',
-  () => {
-    const React = require('react');
+jest.mock('@react-native-picker/picker', () => {
+  const React = require('react');
 
-    const {
-      TextInput,
-    } = require('react-native');
+  const {
+    TextInput,
+  } = require('react-native');
 
-    return {
-      Dropdown: ({
-        label,
-        value,
-        onSelect,
-      }: any) => (
-        <TextInput
-          placeholder={label}
-          value={value}
-          onChangeText={onSelect}
-        />
-      ),
-    };
-  },
-);
+  const Picker = ({
+    selectedValue,
+    onValueChange,
+  }: any) => (
+    <TextInput
+      testID="category-picker"
+      value={selectedValue}
+      onChangeText={onValueChange}
+    />
+  );
+
+  Picker.Item = () => null;
+
+  return {
+    Picker,
+  };
+});
 
 describe('RecipesForm', () => {
   const mockOnClose = jest.fn();
 
-  const mockOnSubmit = jest.fn();
+  const mockOnSubmit = jest.fn(
+    () => Promise.resolve(),
+  );
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -127,9 +127,7 @@ describe('RecipesForm', () => {
   it(
     'should render create mode',
     () => {
-      const {
-        getByText,
-      } = render(
+      const { getByText } = render(
         <RecipesForm
           visible
           onClose={mockOnClose}
@@ -167,25 +165,18 @@ describe('RecipesForm', () => {
   it(
     'should render edit mode',
     () => {
-      const {
-        getByText,
-      } = render(
+      const { getByText } = render(
         <RecipesForm
           visible
           recipe={{
-            category_id: 1,
-
+            category: {
+              id: 1,
+            },
             name: 'Lasanha',
-
             preparationTimeMinutes: 60,
-
             servings: 8,
-
-            ingredients:
-              'Queijo e molho',
-
-            preparationMethod:
-              'Assar',
+            ingredients: 'Queijo e molho',
+            preparationMethod: 'Assar',
           }}
           onClose={mockOnClose}
           onSubmit={mockOnSubmit}
@@ -211,19 +202,14 @@ describe('RecipesForm', () => {
         <RecipesForm
           visible
           recipe={{
-            category_id: 1,
-
+            category: {
+              id: 1,
+            },
             name: 'Lasanha',
-
             preparationTimeMinutes: 60,
-
             servings: 8,
-
-            ingredients:
-              'Queijo e molho',
-
-            preparationMethod:
-              'Assar',
+            ingredients: 'Queijo e molho',
+            preparationMethod: 'Assar',
           }}
           onClose={mockOnClose}
           onSubmit={mockOnSubmit}
@@ -231,21 +217,15 @@ describe('RecipesForm', () => {
       );
 
       expect(
-        getByDisplayValue(
-          'Lasanha',
-        ),
+        getByDisplayValue('Lasanha'),
       ).toBeTruthy();
 
       expect(
-        getByDisplayValue(
-          '60',
-        ),
+        getByDisplayValue('60'),
       ).toBeTruthy();
 
       expect(
-        getByDisplayValue(
-          '8',
-        ),
+        getByDisplayValue('8'),
       ).toBeTruthy();
     },
   );
@@ -253,9 +233,7 @@ describe('RecipesForm', () => {
   it(
     'should call onClose when cancel button is pressed',
     () => {
-      const {
-        getByText,
-      } = render(
+      const { getByText } = render(
         <RecipesForm
           visible
           onClose={mockOnClose}
@@ -269,18 +247,14 @@ describe('RecipesForm', () => {
 
       expect(
         mockOnClose,
-      ).toHaveBeenCalledTimes(
-        1,
-      );
+      ).toHaveBeenCalledTimes(1);
     },
   );
 
   it(
     'should render loading state',
     () => {
-      const {
-        getByText,
-      } = render(
+      const { getByText } = render(
         <RecipesForm
           visible
           loading
@@ -300,6 +274,7 @@ describe('RecipesForm', () => {
     async () => {
       const {
         getByPlaceholderText,
+        getByTestId,
         getByText,
       } = render(
         <RecipesForm
@@ -310,8 +285,8 @@ describe('RecipesForm', () => {
       );
 
       fireEvent.changeText(
-        getByPlaceholderText(
-          'Categoria',
+        getByTestId(
+          'category-picker',
         ),
         '1',
       );
@@ -360,8 +335,19 @@ describe('RecipesForm', () => {
       await waitFor(() => {
         expect(
           mockOnSubmit,
-        ).toHaveBeenCalled();
+        ).toHaveBeenCalledWith({
+          category_id: 1,
+          name: 'Lasanha',
+          preparationTimeMinutes: 60,
+          servings: 8,
+          ingredients: 'Queijo',
+          preparationMethod: 'Assar',
+        });
       });
+
+      expect(
+        mockOnClose,
+      ).toHaveBeenCalled();
     },
   );
 });

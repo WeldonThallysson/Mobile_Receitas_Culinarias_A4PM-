@@ -13,7 +13,6 @@ import {
 
 
 
-
 jest.mock(
   'react-native-paper',
   () => {

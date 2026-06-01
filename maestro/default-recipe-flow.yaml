@@ -1,0 +1,151 @@
+appId: com.culinary_recipe
+
+---
+
+# LOGIN
+
+- launchApp
+
+- assertVisible: "Receitas Culinárias"
+
+- tapOn:
+    id: "login-input"
+
+- inputText: "teste@gmail.com"
+
+- tapOn:
+    id: "password-input"
+
+- inputText: "teste"
+
+- tapOn: "Entrar"
+
+- assertVisible: "Cadastrar nova receita"
+
+# ==========================
+# CADASTRO RECEITA 1
+# ==========================
+
+- tapOn: "Cadastrar nova receita"
+
+- tapOn: "Selecione uma categoria"
+
+- tapOn: "Massas"
+
+- tapOn:
+    text: "Nome da receita"
+
+- inputText: "Lasanha E2E"
+
+- tapOn:
+    text: "Tempo (min)"
+
+- inputText: "45"
+
+- tapOn:
+    text: "Porções"
+
+- inputText: "6"
+
+- tapOn:
+    text: "Ingredientes"
+
+- inputText: "Massa, queijo e molho"
+
+- tapOn:
+    id: "recipe-preparation-input"
+
+- inputText: "Montar e assar"
+
+- tapOn: "Cadastrar"
+
+# ==========================
+# EDITAR RECEITA
+# ==========================
+
+- tapOn: "Editar"
+
+- eraseText
+
+- tapOn:
+    text: "Nome da receita"
+
+- eraseText
+
+- inputText: "Alteracao da receita pelo E2E"
+
+- tapOn: "Salvar"
+
+# ==========================
+# CADASTRO RECEITA 2
+# ==========================
+
+- tapOn: "Cadastrar nova receita"
+
+- tapOn: "Selecione uma categoria"
+
+- tapOn: "Massas"
+
+- tapOn:
+    text: "Nome da receita"
+
+- inputText: "Bolo E2E"
+
+- tapOn:
+    text: "Tempo (min)"
+
+- inputText: "60"
+
+- tapOn:
+    text: "Porções"
+
+- inputText: "8"
+
+- tapOn:
+    text: "Ingredientes"
+
+- inputText: "Farinha, ovos e leite"
+
+- tapOn:
+    id: "recipe-preparation-input"
+
+- inputText: "Misturar e assar"
+
+- tapOn: "Cadastrar"
+
+# ==========================
+# BUSCA
+# ==========================
+
+- tapOn:
+    id: "search-recipes-input"
+
+- inputText: "Bolo E2E"
+
+- assertVisible: "Bolo E2E"
+
+# ==========================
+# DELETE
+# ==========================
+
+- tapOn:
+    text: "delete"
+
+- tapOn: "Excluir"
+
+# ==========================
+# PERFIL
+# ==========================q
+
+- tapOn: "Perfil"
+
+- tapOn: "Atualizar Perfil"
+
+- tapOn:
+    id: "name-input"
+
+- inputText: "Teste E2E"
+
+- tapOn: "Salvar"
+
+- assertVisible: "Teste E2E"

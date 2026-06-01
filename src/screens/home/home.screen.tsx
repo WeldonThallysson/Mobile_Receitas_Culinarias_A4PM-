@@ -128,15 +128,7 @@ const HomeScreen = () => {
   const subMessage = "Gerencie suas receitas culinárias de forma simples"
   return (
     <View style={styles.container}>
-      <FlatList
-        data={filteredRecipes}
-        keyExtractor={item => String(item.id)}
-        refreshing={loading}
-        onRefresh={loadRecipes}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.contentContainer}
-        ListHeaderComponent={
-          <>
+        <View>
             <View style={styles.hero}>
               {message && (
                 <Text variant="headlineMedium" style={styles.heroTitle}>
@@ -156,13 +148,22 @@ const HomeScreen = () => {
             </View>
 
             <Searchbar
+              testID="search-recipes-input"
               placeholder="Buscar receitas..."
               value={search}
               onChangeText={setSearch}
               style={styles.search}
             />
-          </>
-        }
+          </View>
+
+      <FlatList
+        data={filteredRecipes}
+        keyExtractor={item => String(item.id)}
+        refreshing={loading}
+        onRefresh={loadRecipes}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
+      
         ListEmptyComponent={() => (
           <View style={styles.empty}>
             <Icon name="restaurant" size={72} color="#BDBDBD" />
@@ -248,6 +249,7 @@ const HomeScreen = () => {
         )}
       />
       <Button
+        testID="create-recipe-button"
         mode="contained"
         icon="plus"
         style={styles.createButton}

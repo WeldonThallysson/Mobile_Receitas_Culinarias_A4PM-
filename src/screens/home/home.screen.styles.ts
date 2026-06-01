@@ -5,22 +5,24 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 10
   },
 
-
   contentContainer: {
-    padding: 15,
-    paddingTop: 25,
-    paddingBottom: 25,
+
+    paddingTop: 2,
+    paddingBottom: 2,
   },
 
   hero: {
-    marginBottom: 15,
+    marginBottom: 12,
   },
 
   heroTitle: {
     fontWeight: '700',
-    marginBottom: 8,
+    marginBottom: 2,
     fontSize: 22
   },
 
@@ -29,7 +31,6 @@ export const styles = StyleSheet.create({
   },
 
   search: {
-    marginBottom: 24,
     borderRadius: 16,
   },
 
@@ -108,16 +109,14 @@ export const styles = StyleSheet.create({
      backgroundColor: '#edecf3',
   },
   createButton: {
-    marginTop: 10,
-    marginBottom: 10,
+
     
-    marginLeft: 12,
-    marginRight: 12,
+  
     borderRadius: 16,
   },
 
   createButtonContent: {
-    height: 56,
+    height: 50
   },
 
   empty: {
